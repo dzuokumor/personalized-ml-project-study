@@ -48,7 +48,7 @@ export default function LessonContent({ content }) {
 
           case 'callout':
             const styles = {
-              info: 'bg-blue-50 border-blue-200 text-blue-800',
+              info: 'bg-emerald-50 border-emerald-200 text-emerald-800',
               warning: 'bg-amber-50 border-amber-200 text-amber-800',
               tip: 'bg-green-50 border-green-200 text-green-800',
               note: 'bg-slate-50 border-slate-200 text-slate-800'
@@ -67,7 +67,7 @@ export default function LessonContent({ content }) {
                 <ul className="space-y-2">
                   {block.points.map((point, i) => (
                     <li key={i} className="flex items-start gap-2 text-slate-700">
-                      <svg className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <svg className="w-5 h-5 text-emerald-600 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                       </svg>
                       <span>{point}</span>

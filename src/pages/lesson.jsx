@@ -1,5 +1,5 @@
 import { useParams, Link, useNavigate } from 'react-router-dom'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { courses } from '../data/courses'
 import { usestore } from '../store/usestore'
 import LessonContent from '../components/course/lessoncontent'
@@ -26,11 +26,16 @@ export default function Lesson() {
 
   const existingnote = getnote(courseid, lessonid)
 
+  useEffect(() => {
+    setshowquiz(false)
+    setnote('')
+  }, [courseid, lessonid])
+
   if (!course || !lesson) {
     return (
       <div className="text-center py-12">
         <h2 className="text-xl text-slate-600">Lesson not found</h2>
-        <Link to="/" className="text-blue-600 hover:underline mt-4 inline-block">
+        <Link to="/" className="text-emerald-600 hover:underline mt-4 inline-block">
           Back to home
         </Link>
       </div>

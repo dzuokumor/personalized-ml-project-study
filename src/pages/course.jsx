@@ -15,7 +15,7 @@ export default function Course() {
     return (
       <div className="text-center py-12">
         <h2 className="text-xl text-slate-600">Course not found</h2>
-        <Link to="/" className="text-blue-600 hover:underline mt-4 inline-block">
+        <Link to="/" className="text-emerald-600 hover:underline mt-4 inline-block">
           Back to home
         </Link>
       </div>
