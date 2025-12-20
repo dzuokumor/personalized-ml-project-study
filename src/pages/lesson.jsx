@@ -118,7 +118,7 @@ export default function Lesson() {
             <textarea
               defaultValue={existingnote}
               onChange={(e) => setnote(e.target.value)}
-              placeholder="Add your notes for this lesson..."
+              placeholder="Add notes for this lesson..."
               className="w-full h-32 p-3 border border-slate-200 rounded-lg text-sm resize-none focus:outline-none focus:border-emerald-500"
             />
             <button
@@ -133,7 +133,7 @@ export default function Lesson() {
             <div className="bg-white border border-slate-200 rounded-xl p-8 mb-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <h3 className="text-lg font-semibold text-slate-900">Test Your Knowledge</h3>
+                  <h3 className="text-lg font-semibold text-slate-900">Test Knowledge</h3>
                   <p className="text-slate-500 text-sm">{lesson.quiz.length} questions</p>
                 </div>
                 <button

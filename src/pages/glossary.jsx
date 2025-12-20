@@ -68,7 +68,7 @@ export default function Glossary() {
 
         {filtered.length === 0 && (
           <div className="text-center py-12 text-slate-500">
-            No terms found matching your search.
+            No terms found matching the search.
           </div>
         )}
       </div>

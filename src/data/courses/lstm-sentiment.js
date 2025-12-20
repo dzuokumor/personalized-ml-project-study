@@ -80,8 +80,8 @@ export const lstmcourse = {
         { type: 'formula', formula: 'oₜ = σ(Wo · [hₜ₋₁, xₜ] + bo)' },
         { type: 'formula', formula: 'hₜ = oₜ ⊙ tanh(Cₜ)' },
 
-        { type: 'heading', text: 'Your LSTM Implementation' },
-        { type: 'paragraph', text: 'In your sentiment detection project, you used Keras to create an LSTM layer. Lets examine how the architecture maps to your code:' },
+        { type: 'heading', text: 'The LSTM Implementation' },
+        { type: 'paragraph', text: 'In my sentiment detection project, I used Keras to create an LSTM layer. Lets examine how the architecture maps to the code:' },
         { type: 'code', language: 'python', filename: 'model.py', fromproject: 'sentiment_detection_lstm',
           code: `def create_sentiment_model(vocab_size, embedding_dim=64, lstm_units=64, max_length=100):
     model = keras.Sequential([
@@ -97,7 +97,7 @@ export const lstmcourse = {
     )
 
     return model` },
-        { type: 'paragraph', text: 'The lstm_units=64 parameter means your LSTM has 64 memory cells, each with its own forget, input, and output gates. This single line actually creates a complex network with thousands of parameters.' },
+        { type: 'paragraph', text: 'The lstm_units=64 parameter means the LSTM has 64 memory cells, each with its own forget, input, and output gates. This single line actually creates a complex network with thousands of parameters.' },
 
         { type: 'callout', variant: 'info', text: 'The mask_zero=True parameter tells the LSTM to ignore padding tokens (zeros), preventing the model from learning patterns from padding.' },
 
@@ -116,7 +116,7 @@ export const lstmcourse = {
           explanation: 'The forget gate outputs values between 0 and 1, determining how much of the previous cell state to keep or discard.'
         },
         {
-          question: 'Why is mask_zero=True important in your Embedding layer?',
+          question: 'Why is mask_zero=True important in the Embedding layer?',
           options: ['It speeds up training', 'It reduces memory usage', 'It tells LSTM to ignore padding tokens', 'It normalizes the embeddings'],
           correct: 2,
           explanation: 'mask_zero=True ensures the LSTM doesnt learn from padding tokens, which would corrupt the learned representations.'
@@ -138,8 +138,8 @@ export const lstmcourse = {
         { type: 'heading', text: 'Why Preprocessing Matters' },
         { type: 'paragraph', text: 'Neural networks operate on numbers, not text. Text preprocessing transforms raw text into numerical sequences that models can process. Poor preprocessing can severely limit model performance, while good preprocessing can make the difference between a mediocre and excellent model.' },
 
-        { type: 'heading', text: 'Your Preprocessing Pipeline' },
-        { type: 'paragraph', text: 'Lets walk through each step of your text preprocessing class and understand why each transformation matters.' },
+        { type: 'heading', text: 'The Preprocessing Pipeline' },
+        { type: 'paragraph', text: 'Lets walk through each step of the text preprocessing class and understand why each transformation matters.' },
         { type: 'code', language: 'python', filename: 'preprocessing.py', fromproject: 'sentiment_detection_lstm',
           code: `class textpreprocessor:
     def __init__(self, max_features=5000, max_length=100):
@@ -149,11 +149,11 @@ export const lstmcourse = {
         self.vocab_size = 0` },
 
         { type: 'subheading', text: 'Vocabulary Size (max_features)' },
-        { type: 'paragraph', text: 'The max_features=5000 limits your vocabulary to the 5000 most common words. This is a trade-off between expressiveness and efficiency. Rare words often dont contribute much to sentiment and increase model complexity.' },
+        { type: 'paragraph', text: 'The max_features=5000 limits the vocabulary to the 5000 most common words. This is a trade-off between expressiveness and efficiency. Rare words often dont contribute much to sentiment and increase model complexity.' },
         { type: 'callout', variant: 'tip', text: 'For sentiment analysis, 5000-10000 words usually captures enough vocabulary. Increasing beyond this rarely improves accuracy but significantly increases training time.' },
 
         { type: 'subheading', text: 'OOV Token' },
-        { type: 'paragraph', text: 'The oov_token="<OOV>" (Out Of Vocabulary) handles words not in your vocabulary. Without this, unknown words would be silently dropped, potentially losing important information.' },
+        { type: 'paragraph', text: 'The oov_token="<OOV>" (Out Of Vocabulary) handles words not in the vocabulary. Without this, unknown words would be silently dropped, potentially losing important information.' },
 
         { type: 'heading', text: 'Text Cleaning' },
         { type: 'code', language: 'python', filename: 'preprocessing.py', fromproject: 'sentiment_detection_lstm',
@@ -221,21 +221,21 @@ export const lstmcourse = {
         { type: 'paragraph', text: 'Word embeddings compress these sparse vectors into dense, lower-dimensional representations where similar words have similar vectors. The famous example: king - man + woman ≈ queen shows how embeddings capture semantic relationships.' },
 
         { type: 'heading', text: 'How Embeddings Work' },
-        { type: 'paragraph', text: 'An embedding layer is essentially a lookup table that maps each word index to a dense vector. In your model, with embedding_dim=64, each word is represented by 64 numbers learned during training.' },
+        { type: 'paragraph', text: 'An embedding layer is essentially a lookup table that maps each word index to a dense vector. In this model, with embedding_dim=64, each word is represented by 64 numbers learned during training.' },
         { type: 'code', language: 'python', filename: 'model.py', fromproject: 'sentiment_detection_lstm',
           code: `layers.Embedding(vocab_size, embedding_dim, input_length=max_length, mask_zero=True)` },
 
         { type: 'paragraph', text: 'This creates a matrix of shape (vocab_size, embedding_dim). When a word with index 42 passes through, the layer returns the 42nd row of this matrix.' },
 
         { type: 'subheading', text: 'Learning vs Pre-trained Embeddings' },
-        { type: 'paragraph', text: 'Your model learns embeddings from scratch during training. The alternative is using pre-trained embeddings like Word2Vec or GloVe, trained on billions of words. For domain-specific tasks like airline sentiment, learning embeddings often works better because the model learns representations specific to your domain.' },
+        { type: 'paragraph', text: 'This model learns embeddings from scratch during training. The alternative is using pre-trained embeddings like Word2Vec or GloVe, trained on billions of words. For domain-specific tasks like airline sentiment, learning embeddings often works better because the model learns representations specific to the domain.' },
 
         { type: 'heading', text: 'Embedding Dimensions' },
         { type: 'paragraph', text: 'The embedding_dim=64 is a hyperparameter. Higher dimensions can capture more nuanced relationships but require more data to train effectively. Common choices range from 50 to 300.' },
         { type: 'list', items: [
           '50-100 dimensions: Good for smaller datasets, faster training',
           '200-300 dimensions: Better for larger datasets, captures more nuance',
-          'Your choice (64): Balanced for your dataset size'
+          'My choice (64): Balanced for the dataset size'
         ]},
 
         { type: 'keypoints', points: [
@@ -261,7 +261,7 @@ export const lstmcourse = {
       concepts: ['Sigmoid', 'Binary Crossentropy', 'Classification'],
       content: [
         { type: 'heading', text: 'The Binary Classification Task' },
-        { type: 'paragraph', text: 'Your sentiment model performs binary classification: given a text, predict whether its positive (1) or negative (0). This is the simplest classification task but illustrates fundamental concepts that apply to all classification problems.' },
+        { type: 'paragraph', text: 'My sentiment model performs binary classification: given a text, predict whether its positive (1) or negative (0). This is the simplest classification task but illustrates fundamental concepts that apply to all classification problems.' },
 
         { type: 'heading', text: 'Sigmoid Activation' },
         { type: 'paragraph', text: 'The final layer uses sigmoid activation, which squashes any input to a value between 0 and 1—perfect for representing probability.' },
@@ -298,7 +298,7 @@ export const lstmcourse = {
       concepts: ['Language Model', 'Temperature Sampling', 'Sequence Generation'],
       content: [
         { type: 'heading', text: 'From Classification to Generation' },
-        { type: 'paragraph', text: 'Your text generation model flips the LSTM architecture. Instead of many-to-one (sequence to label), it predicts the next word given previous words—the foundation of all language models, from your LSTM to GPT.' },
+        { type: 'paragraph', text: 'My text generation model flips the LSTM architecture. Instead of many-to-one (sequence to label), it predicts the next word given previous words—the foundation of all language models, from simple LSTMs to GPT.' },
 
         { type: 'heading', text: 'Stacked LSTMs for Generation' },
         { type: 'code', language: 'python', filename: 'textgen/model.py', fromproject: 'sentiment_detection_lstm',

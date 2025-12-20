@@ -27,8 +27,8 @@ export const mlopscourse = {
           'Retraining: Updating models as data changes'
         ]},
 
-        { type: 'heading', text: 'Your Production System' },
-        { type: 'paragraph', text: 'Your ml-deployment project implements a complete MLOps pipeline: model serving with FastAPI, containerization with Docker, monitoring, and retraining capabilities. This is a realistic production architecture.' },
+        { type: 'heading', text: 'The Production System' },
+        { type: 'paragraph', text: 'My ml-deployment project implements a complete MLOps pipeline: model serving with FastAPI, containerization with Docker, monitoring, and retraining capabilities. This is a realistic production architecture.' },
 
         { type: 'keypoints', points: [
           'MLOps applies DevOps practices to ML systems',
@@ -55,7 +55,7 @@ export const mlopscourse = {
         { type: 'heading', text: 'From Notebook to API' },
         { type: 'paragraph', text: 'A trained model in a notebook is useful for analysis. A model behind an API can serve thousands of predictions per second. Model serving turns ML models into reliable, scalable services.' },
 
-        { type: 'heading', text: 'Your Model Class' },
+        { type: 'heading', text: 'The Model Class' },
         { type: 'code', language: 'python', filename: 'model.py', fromproject: 'ml-deployment',
           code: `class LandCoverModel:
     def __init__(self):
@@ -143,7 +143,7 @@ export const mlopscourse = {
         ]},
 
         { type: 'heading', text: 'Horizontal Scaling' },
-        { type: 'paragraph', text: 'Your project tested scaling from 1 to 2 containers, achieving 40% throughput improvement. Horizontal scaling (more containers) is often easier than vertical scaling (bigger machines) for ML serving.' },
+        { type: 'paragraph', text: 'This project tested scaling from 1 to 2 containers, achieving 40% throughput improvement. Horizontal scaling (more containers) is often easier than vertical scaling (bigger machines) for ML serving.' },
 
         { type: 'callout', variant: 'tip', text: 'Stateless services scale best. Keep model weights in the container or shared storage, not in memory across requests.' },
 
@@ -172,7 +172,7 @@ export const mlopscourse = {
         { type: 'heading', text: 'Why Retrain?' },
         { type: 'paragraph', text: 'Models degrade over time. Data drift occurs when the real-world data distribution shifts from training data. A fraud detection model trained on 2020 data may fail on 2024 patterns. Continuous retraining keeps models relevant.' },
 
-        { type: 'heading', text: 'Your Retraining Implementation' },
+        { type: 'heading', text: 'The Retraining Implementation' },
         { type: 'code', language: 'python', filename: 'model.py', fromproject: 'ml-deployment',
           code: `def retrain(self, train_data_path, epochs=10, batch_size=8, log_callback=None, progress_callback=None):
     def log(msg):
@@ -195,7 +195,7 @@ export const mlopscourse = {
         subset='training'
     )` },
 
-        { type: 'paragraph', text: 'Your retraining function includes logging callbacks for real-time progress updates. This is essential for production systems where training might take hours—users need visibility into progress.' },
+        { type: 'paragraph', text: 'The retraining function includes logging callbacks for real-time progress updates. This is essential for production systems where training might take hours—users need visibility into progress.' },
 
         { type: 'heading', text: 'Retraining Best Practices' },
         { type: 'code', language: 'python', filename: 'model.py', fromproject: 'ml-deployment',
@@ -251,10 +251,10 @@ self.model = keras.models.load_model(MODEL_PATH)` },
           'Resource utilization: CPU, memory, GPU usage'
         ]},
 
-        { type: 'heading', text: 'Your Load Test Results' },
-        { type: 'paragraph', text: 'Your project tested with Locust, comparing 1 vs 2 containers under 50-100 concurrent users. The 40% throughput improvement with 2 containers demonstrates near-linear horizontal scaling—an excellent result.' },
+        { type: 'heading', text: 'The Load Test Results' },
+        { type: 'paragraph', text: 'This project tested with Locust, comparing 1 vs 2 containers under 50-100 concurrent users. The 40% throughput improvement with 2 containers demonstrates near-linear horizontal scaling—an excellent result.' },
 
-        { type: 'callout', variant: 'info', text: 'Not all systems scale linearly. Shared resources (databases, model weights) can become bottlenecks. Test to find your scaling limits.' },
+        { type: 'callout', variant: 'info', text: 'Not all systems scale linearly. Shared resources (databases, model weights) can become bottlenecks. Test to find the scaling limits.' },
 
         { type: 'heading', text: 'Load Testing Best Practices' },
         { type: 'list', items: [

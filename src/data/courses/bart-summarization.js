@@ -78,7 +78,7 @@ export const bartcourse = {
         ]},
         { type: 'paragraph', text: 'This diverse corruption teaches BART to understand and generate text at multiple levels—from individual tokens to document structure.' },
 
-        { type: 'heading', text: 'Your BART Implementation' },
+        { type: 'heading', text: 'The BART Implementation' },
         { type: 'code', language: 'python', filename: 'model.py', fromproject: 'BART-transformer-summary-gen',
           code: `from transformers import BartTokenizer, BartForConditionalGeneration
 
@@ -118,7 +118,7 @@ class bartsummarizer:
         { type: 'paragraph', text: 'Beam search maintains k candidate sequences (beams) at each step. At each position, it expands all beams with all possible tokens, scores them, and keeps only the top k. This balances exploration with computational cost.' },
         { type: 'paragraph', text: 'With beam size 4, you explore 4 hypotheses in parallel, pruning less promising ones at each step.' },
 
-        { type: 'heading', text: 'Your Generation Parameters' },
+        { type: 'heading', text: 'The Generation Parameters' },
         { type: 'code', language: 'python', filename: 'model.py', fromproject: 'BART-transformer-summary-gen',
           code: `def summarize(self, text, max_length=150, min_length=40, num_beams=4):
     inputs = self.tokenizer(

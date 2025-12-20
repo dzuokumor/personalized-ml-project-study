@@ -90,11 +90,11 @@ export default function SyncModal() {
           {activeTab === 'export' ? (
             <div>
               <p className="text-sm text-slate-600 mb-4">
-                Copy this code to transfer your progress to another device.
+                Copy this code to transfer progress to another device.
               </p>
 
               <div className="mb-4 p-3 bg-slate-50 rounded-lg">
-                <p className="text-xs text-slate-500 mb-1">Your sync code</p>
+                <p className="text-xs text-slate-500 mb-1">Sync code</p>
                 <p className="text-lg font-mono font-semibold text-slate-900 tracking-wider">
                   {synccode}
                 </p>
@@ -124,7 +124,7 @@ export default function SyncModal() {
           ) : (
             <div>
               <p className="text-sm text-slate-600 mb-4">
-                Paste a progress code from another device to sync your progress.
+                Paste a progress code from another device to sync progress here.
               </p>
 
               <textarea
@@ -133,7 +133,7 @@ export default function SyncModal() {
                   setimportcode(e.target.value)
                   setimportstatus(null)
                 }}
-                placeholder="Paste your progress code here..."
+                placeholder="Paste progress code here..."
                 className="w-full h-24 p-3 border border-slate-200 rounded-lg text-sm font-mono resize-none focus:outline-none focus:border-emerald-500 mb-4"
               />
 

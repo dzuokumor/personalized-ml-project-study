@@ -25,8 +25,8 @@ export const cnncourse = {
         ]},
         { type: 'paragraph', text: 'Convolutions exploit these properties, making CNNs parameter-efficient and effective for visual tasks.' },
 
-        { type: 'heading', text: 'Your Classification Task' },
-        { type: 'paragraph', text: 'Your project classifies satellite images into 10 land cover types using the ESA WorldCover 2021 dataset. This real-world application demonstrates CNNs on geospatial data.' },
+        { type: 'heading', text: 'The Classification Task' },
+        { type: 'paragraph', text: 'This project classifies satellite images into 10 land cover types using the ESA WorldCover 2021 dataset. This real-world application demonstrates CNNs on geospatial data.' },
         { type: 'code', language: 'python', filename: 'app.py', fromproject: 'lagos-urban-classification-ml-summative',
           code: `classes = {
     10: 'Trees',
@@ -115,13 +115,13 @@ export const cnncourse = {
         { type: 'subheading', text: 'Average Pooling' },
         { type: 'paragraph', text: 'Average pooling takes the mean instead of maximum. Its smoother but may dilute strong activations. Often used at the end of networks (global average pooling) to collapse spatial dimensions entirely.' },
 
-        { type: 'heading', text: 'Your Image Pipeline' },
+        { type: 'heading', text: 'The Image Pipeline' },
         { type: 'code', language: 'python', filename: 'app.py', fromproject: 'lagos-urban-classification-ml-summative',
           code: `img = Image.open(io.BytesIO(image_bytes)).convert('RGB')
 img_resized = img.resize((64, 64))
 img_array = np.array(img_resized).astype('float32') / 255.0
 img_input = img_array.reshape(1, 64, 64, 3)` },
-        { type: 'paragraph', text: 'Your model uses 64x64 images—already downsampled from satellite resolution. The model then further pools internally to extract compact feature representations.' },
+        { type: 'paragraph', text: 'This model uses 64x64 images—already downsampled from satellite resolution. The model then further pools internally to extract compact feature representations.' },
 
         { type: 'keypoints', points: [
           'Pooling reduces spatial dimensions while preserving features',
@@ -146,7 +146,7 @@ img_input = img_array.reshape(1, 64, 64, 3)` },
       concepts: ['Softmax', 'Cross-Entropy', 'Multi-class'],
       content: [
         { type: 'heading', text: 'From Binary to Multi-class' },
-        { type: 'paragraph', text: 'Your land cover model classifies into 10 categories, not just 2. This requires softmax activation and categorical cross-entropy loss instead of sigmoid and binary cross-entropy.' },
+        { type: 'paragraph', text: 'This land cover model classifies into 10 categories, not just 2. This requires softmax activation and categorical cross-entropy loss instead of sigmoid and binary cross-entropy.' },
 
         { type: 'heading', text: 'The Softmax Function' },
         { type: 'paragraph', text: 'Softmax converts raw scores (logits) into a probability distribution. All outputs sum to 1, and higher logits get exponentially more probability.' },
@@ -163,7 +163,7 @@ confidence = pred_probs[pred_class_idx]
 all_idx = np.argsort(pred_probs)[::-1]
 all_predictions = [(classes[reverse_mapping_rgb[idx]], float(pred_probs[idx])) for idx in all_idx]` },
 
-        { type: 'paragraph', text: 'Your code extracts not just the top prediction but all predictions sorted by probability. This allows showing the user how confident the model is across all classes.' },
+        { type: 'paragraph', text: 'The code extracts not just the top prediction but all predictions sorted by probability. This allows showing the user how confident the model is across all classes.' },
 
         { type: 'callout', variant: 'info', text: 'High confidence in wrong predictions indicates the model learned wrong patterns. Low confidence on correct predictions suggests the model needs more training data.' },
 

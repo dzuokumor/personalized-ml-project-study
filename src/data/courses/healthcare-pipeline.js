@@ -15,8 +15,8 @@ export const healthcarecourse = {
         { type: 'heading', text: 'The Promise and Responsibility' },
         { type: 'paragraph', text: 'Healthcare ML can save lives—detecting diseases early, predicting complications, optimizing treatments. But it also carries unique responsibilities. Errors affect real patients. Bias can harm vulnerable populations. Regulations like HIPAA govern data handling.' },
 
-        { type: 'heading', text: 'Your Cardiovascular Prediction System' },
-        { type: 'paragraph', text: 'Your project predicts cardiovascular disease risk from patient data. This is a common healthcare ML application with real clinical value—early identification enables preventive interventions.' },
+        { type: 'heading', text: 'The Cardiovascular Prediction System' },
+        { type: 'paragraph', text: 'This project predicts cardiovascular disease risk from patient data. This is a common healthcare ML application with real clinical value—early identification enables preventive interventions.' },
 
         { type: 'heading', text: 'Key Considerations for Healthcare ML' },
         { type: 'list', items: [
@@ -54,8 +54,8 @@ export const healthcarecourse = {
         { type: 'heading', text: 'Extract, Transform, Load' },
         { type: 'paragraph', text: 'ETL pipelines move data from sources (medical records, devices, labs) through transformations (cleaning, feature engineering) into storage (databases, feature stores) for model training and inference.' },
 
-        { type: 'heading', text: 'Your Pipeline Architecture' },
-        { type: 'paragraph', text: 'Your project uses a dual-database architecture: SQL (PostgreSQL) for structured patient data with ACID guarantees, and MongoDB for flexible prediction logging and unstructured data.' },
+        { type: 'heading', text: 'The Pipeline Architecture' },
+        { type: 'paragraph', text: 'This project uses a dual-database architecture: SQL (PostgreSQL) for structured patient data with ACID guarantees, and MongoDB for flexible prediction logging and unstructured data.' },
 
         { type: 'subheading', text: 'SQL for Structured Data' },
         { type: 'paragraph', text: 'Patient demographics, medical measurements, and diagnoses have fixed schemas that benefit from relational databases. Foreign keys ensure data integrity—every diagnosis links to a valid patient.' },
@@ -97,7 +97,7 @@ export const healthcarecourse = {
         { type: 'heading', text: 'Designing ML APIs' },
         { type: 'paragraph', text: 'Good API design makes ML systems usable. Clear endpoints, validated inputs, informative errors, and consistent responses enable integration with clinical workflows and other systems.' },
 
-        { type: 'heading', text: 'Your API Structure' },
+        { type: 'heading', text: 'The API Structure' },
         { type: 'code', language: 'python', filename: 'routers/prediction.py', fromproject: 'database-prediction-pipeline-group-11',
           code: `router = APIRouter(
     prefix="/predictions",
@@ -126,7 +126,7 @@ def log_prediction(prediction: PredictionCreate):
         ]},
 
         { type: 'heading', text: 'Input Validation with Pydantic' },
-        { type: 'paragraph', text: 'Pydantic models define expected input structure with types and constraints. Invalid requests are rejected with clear error messages before reaching your business logic.' },
+        { type: 'paragraph', text: 'Pydantic models define expected input structure with types and constraints. Invalid requests are rejected with clear error messages before reaching the business logic.' },
 
         { type: 'keypoints', points: [
           'REST APIs use resources and HTTP verbs consistently',
@@ -151,10 +151,10 @@ def log_prediction(prediction: PredictionCreate):
       concepts: ['CRUD', 'Repository Pattern', 'ORM'],
       content: [
         { type: 'heading', text: 'Create, Read, Update, Delete' },
-        { type: 'paragraph', text: 'CRUD operations are the fundamental data access patterns. Separating data access logic into dedicated functions (repository pattern) keeps your code organized and testable.' },
+        { type: 'paragraph', text: 'CRUD operations are the fundamental data access patterns. Separating data access logic into dedicated functions (repository pattern) keeps code organized and testable.' },
 
-        { type: 'heading', text: 'Your CRUD Layer' },
-        { type: 'paragraph', text: 'Your project has separate CRUD modules for SQL (using SQLAlchemy) and MongoDB (using PyMongo). This separation allows each to use idiomatic patterns for their database type.' },
+        { type: 'heading', text: 'The CRUD Layer' },
+        { type: 'paragraph', text: 'This project has separate CRUD modules for SQL (using SQLAlchemy) and MongoDB (using PyMongo). This separation allows each to use idiomatic patterns for their database type.' },
 
         { type: 'subheading', text: 'SQL with SQLAlchemy ORM' },
         { type: 'paragraph', text: 'SQLAlchemy maps Python classes to database tables. You write Python code; it generates SQL. This abstraction improves portability and prevents SQL injection.' },
@@ -207,7 +207,7 @@ def log_prediction(prediction: PredictionCreate):
         ]},
 
         { type: 'heading', text: 'MongoDB for Prediction Logs' },
-        { type: 'paragraph', text: 'Your project logs predictions to MongoDB. This is a common pattern—predictions are append-heavy (many writes, few updates) and may have varying structure as models evolve.' },
+        { type: 'paragraph', text: 'This project logs predictions to MongoDB. This is a common pattern—predictions are append-heavy (many writes, few updates) and may have varying structure as models evolve.' },
 
         { type: 'callout', variant: 'info', text: 'Prediction logs are valuable training data. Comparing predictions to actual outcomes enables monitoring and retraining.' },
 

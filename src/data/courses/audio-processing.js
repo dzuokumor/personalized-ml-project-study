@@ -19,7 +19,7 @@ export const audioprocessingcourse = {
         { type: 'paragraph', text: 'The raw waveform is in the time domain—amplitude over time. But many audio characteristics are better understood in the frequency domain—which frequencies are present and how strong they are.' },
         { type: 'paragraph', text: 'The Fourier Transform converts between these domains. Most audio ML features are extracted from frequency representations.' },
 
-        { type: 'heading', text: 'Your Audio Loader' },
+        { type: 'heading', text: 'The Audio Loader' },
         { type: 'code', language: 'python', filename: 'audio_processor.py', fromproject: 'multimodel-data-preprocessing',
           code: `class AudioProcessor:
     def __init__(self, audio_dir: str, output_csv: str, sample_rate: int = 22050):
@@ -72,7 +72,7 @@ export const audioprocessingcourse = {
           '5. Apply DCT to decorrelate and compress'
         ]},
 
-        { type: 'heading', text: 'Your MFCC Implementation' },
+        { type: 'heading', text: 'The MFCC Implementation' },
         { type: 'code', language: 'python', filename: 'audio_processor.py', fromproject: 'multimodel-data-preprocessing',
           code: `def extract_mfcc(self, y: np.ndarray, sr: int, n_mfcc: int = 13) -> np.ndarray:
     mfcc = librosa.feature.mfcc(y=y, sr=sr, n_mfcc=n_mfcc)
@@ -82,7 +82,7 @@ export const audioprocessingcourse = {
 
         { type: 'paragraph', text: 'You extract 13 MFCCs and compute both mean and standard deviation across time frames. This gives 26 features capturing both the average spectral shape and its variation over the clip.' },
 
-        { type: 'callout', variant: 'tip', text: 'The first MFCC (C0) represents overall energy. Some practitioners exclude it; others find it useful. Your choice to include it is valid.' },
+        { type: 'callout', variant: 'tip', text: 'The first MFCC (C0) represents overall energy. Some practitioners exclude it; others find it useful. Including it is a valid choice.' },
 
         { type: 'keypoints', points: [
           'MFCCs model human auditory perception',
@@ -109,7 +109,7 @@ export const audioprocessingcourse = {
         { type: 'heading', text: 'Beyond MFCCs' },
         { type: 'paragraph', text: 'While MFCCs capture spectral shape, other features describe different aspects of audio. Combining multiple feature types often improves classification performance.' },
 
-        { type: 'heading', text: 'Your Feature Extractors' },
+        { type: 'heading', text: 'The Feature Extractors' },
         { type: 'code', language: 'python', filename: 'audio_processor.py', fromproject: 'multimodel-data-preprocessing',
           code: `def extract_spectral_rolloff(self, y: np.ndarray, sr: int) -> float:
     rolloff = librosa.feature.spectral_rolloff(y=y, sr=sr)
@@ -149,7 +149,7 @@ def extract_spectral_centroid(self, y: np.ndarray, sr: int) -> float:
         [spectral_rolloff, energy, zcr, spectral_centroid]
     ])` },
 
-        { type: 'paragraph', text: 'Your final feature vector has 30 dimensions: 26 from MFCCs (13 mean + 13 std) plus 4 spectral features. This compact representation captures most information needed for audio classification.' },
+        { type: 'paragraph', text: 'The final feature vector has 30 dimensions: 26 from MFCCs (13 mean + 13 std) plus 4 spectral features. This compact representation captures most information needed for audio classification.' },
 
         { type: 'keypoints', points: [
           'Spectral centroid indicates brightness of sound',
@@ -176,7 +176,7 @@ def extract_spectral_centroid(self, y: np.ndarray, sr: int) -> float:
         { type: 'heading', text: 'Why Augment Audio?' },
         { type: 'paragraph', text: 'Audio datasets are often small due to collection costs. Augmentation creates realistic variations of existing samples, effectively expanding the training set and improving model robustness.' },
 
-        { type: 'heading', text: 'Your Augmentation Pipeline' },
+        { type: 'heading', text: 'The Augmentation Pipeline' },
         { type: 'code', language: 'python', filename: 'audio_processor.py', fromproject: 'multimodel-data-preprocessing',
           code: `def apply_pitch_shift(self, y: np.ndarray, sr: int, n_steps: float = 2.0) -> np.ndarray:
     return librosa.effects.pitch_shift(y, sr=sr, n_steps=n_steps)
@@ -238,7 +238,7 @@ def apply_augmentations(self, y: np.ndarray, sr: int) -> List[Tuple[np.ndarray, 
         { type: 'paragraph', text: 'Gradient boosting builds trees sequentially. Each tree learns to correct the errors of previous trees by fitting to the residuals. XGBoost optimizes this with regularization, parallel processing, and clever handling of missing values.' },
 
         { type: 'heading', text: 'Handling Class Imbalance with SMOTE' },
-        { type: 'paragraph', text: 'Your product recommendation model used SMOTE (Synthetic Minority Oversampling Technique) to handle imbalanced classes. SMOTE creates synthetic examples of minority classes by interpolating between existing samples.' },
+        { type: 'paragraph', text: 'The product recommendation model used SMOTE (Synthetic Minority Oversampling Technique) to handle imbalanced classes. SMOTE creates synthetic examples of minority classes by interpolating between existing samples.' },
 
         { type: 'subheading', text: 'Key XGBoost Hyperparameters' },
         { type: 'list', items: [
@@ -249,7 +249,7 @@ def apply_augmentations(self, y: np.ndarray, sr: int) -> List[Tuple[np.ndarray, 
           'colsample_bytree: Fraction of features per tree. Decorrelates trees.'
         ]},
 
-        { type: 'callout', variant: 'tip', text: 'Your GridSearchCV tested 108 parameter combinations. For faster tuning, try RandomizedSearchCV or Bayesian optimization.' },
+        { type: 'callout', variant: 'tip', text: 'The GridSearchCV tested 108 parameter combinations. For faster tuning, try RandomizedSearchCV or Bayesian optimization.' },
 
         { type: 'keypoints', points: [
           'XGBoost excels on tabular data with less tuning than neural networks',

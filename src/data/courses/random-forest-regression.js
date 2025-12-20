@@ -65,8 +65,8 @@ export const randomforestcourse = {
         ]},
         { type: 'paragraph', text: 'This double randomness decorrelates the trees. Even if one feature dominates, different trees will focus on different features, creating diversity.' },
 
-        { type: 'heading', text: 'Your Travel Time Prediction Model' },
-        { type: 'paragraph', text: 'Your model predicts inter-city travel time in Nigeria using road and environmental features. The FastAPI endpoint shows the full prediction flow:' },
+        { type: 'heading', text: 'The Travel Time Prediction Model' },
+        { type: 'paragraph', text: 'This model predicts inter-city travel time in Nigeria using road and environmental features. The FastAPI endpoint shows the full prediction flow:' },
         { type: 'code', language: 'python', filename: 'prediction.py', fromproject: 'machine-learning-summative',
           code: `class TravelInput(BaseModel):
     road_length_km: float = Field(..., gt=0, description="Length of the road segment in kilometers")
@@ -101,7 +101,7 @@ export const randomforestcourse = {
         { type: 'heading', text: 'Why Feature Engineering Matters' },
         { type: 'paragraph', text: 'Raw data rarely captures the patterns models need. Feature engineering creates new features that make relationships easier to learn. A skilled data scientist can often improve model performance more through feature engineering than by tuning algorithms.' },
 
-        { type: 'heading', text: 'Your Feature Transformations' },
+        { type: 'heading', text: 'The Feature Transformations' },
         { type: 'code', language: 'python', filename: 'prediction.py', fromproject: 'machine-learning-summative',
           code: `@app.post("/predict-time")
 def predict_travel_time(data: TravelInput):
@@ -162,7 +162,7 @@ def predict_travel_time(data: TravelInput):
         { type: 'heading', text: 'Why Scale Features?' },
         { type: 'paragraph', text: 'Many algorithms (KNN, SVM, neural networks) are sensitive to feature scales. A feature ranging 0-1000 would dominate one ranging 0-1. Standard scaling (z-score normalization) puts all features on comparable scales.' },
         { type: 'formula', formula: 'z = (x - μ) / σ' },
-        { type: 'paragraph', text: 'Random Forests are actually scale-invariant (trees split on value thresholds, not distances), but scaling was included in your pipeline, possibly for comparison with other algorithms during development.' },
+        { type: 'paragraph', text: 'Random Forests are actually scale-invariant (trees split on value thresholds, not distances), but scaling was included in the pipeline, possibly for comparison with other algorithms during development.' },
 
         { type: 'heading', text: 'Persisting Models with Joblib' },
         { type: 'code', language: 'python', filename: 'prediction.py', fromproject: 'machine-learning-summative',
@@ -172,7 +172,7 @@ scaler = joblib.load("../models/scaler.pkl")` },
         { type: 'paragraph', text: 'Joblib efficiently serializes scikit-learn models and numpy arrays. Critical point: you must save both the model AND the scaler. The scaler contains the mean and standard deviation from training data—without it, you cant scale new inputs correctly.' },
 
         { type: 'heading', text: 'FastAPI for ML Deployment' },
-        { type: 'paragraph', text: 'FastAPI provides automatic request validation, OpenAPI documentation, and async support. Your prediction endpoint validates inputs with Pydantic before they reach the model, catching errors early.' },
+        { type: 'paragraph', text: 'FastAPI provides automatic request validation, OpenAPI documentation, and async support. The prediction endpoint validates inputs with Pydantic before they reach the model, catching errors early.' },
 
         { type: 'callout', variant: 'warning', text: 'Always validate inputs before prediction. Invalid inputs can cause cryptic model errors or worse—silent incorrect predictions.' },
 
