@@ -140,7 +140,7 @@ ${context ? `\n\nCurrent lesson context: ${context}` : ''}`
         'X-Title': 'ML Learning Platform'
       },
       body: JSON.stringify({
-        model: 'google/gemini-2.0-flash-exp:free',
+        model: 'meta-llama/llama-3.2-3b-instruct:free',
         messages: [systemmessage, ...messages],
         max_tokens: 1000,
         temperature: 0.7
