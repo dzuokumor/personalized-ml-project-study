@@ -19,13 +19,13 @@ export const Authprovider = ({ children }) => {
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setuser(session?.user ?? null)
-      setavatar(session?.user?.user_metadata?.avatar_url ?? null)
+      setavatar(session?.user?.user_metadata?.custom_avatar_url ?? session?.user?.user_metadata?.avatar_url ?? null)
       setloading(false)
     })
 
     supabase.auth.getSession().then(({ data: { session } }) => {
       setuser(session?.user ?? null)
-      setavatar(session?.user?.user_metadata?.avatar_url ?? null)
+      setavatar(session?.user?.user_metadata?.custom_avatar_url ?? session?.user?.user_metadata?.avatar_url ?? null)
       setloading(false)
     })
 
@@ -75,7 +75,7 @@ export const Authprovider = ({ children }) => {
 
   const updateavatar = async (avatarurl) => {
     const { data, error } = await supabase.auth.updateUser({
-      data: { avatar_url: avatarurl }
+      data: { custom_avatar_url: avatarurl }
     })
     if (!error) {
       setavatar(avatarurl)
