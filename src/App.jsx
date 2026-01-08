@@ -1,21 +1,14 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
-import { useEffect } from 'react'
 import Layout from './components/layout/layout'
 import Home from './pages/home'
 import Course from './pages/course'
 import Lesson from './pages/lesson'
 import Glossary from './pages/glossary'
-import SyncModal from './components/ui/syncmodal'
-import { usestore } from './store/usestore'
+import Profile from './pages/profile'
+import Achievements from './pages/achievements'
+import Chatwidget from './components/ai/chatwidget'
 
 export default function App() {
-  const initializesynccode = usestore((state) => state.initializesynccode)
-  const showsyncmodal = usestore((state) => state.showsyncmodal)
-
-  useEffect(() => {
-    initializesynccode()
-  }, [initializesynccode])
-
   return (
     <BrowserRouter>
       <Routes>
@@ -24,9 +17,11 @@ export default function App() {
           <Route path="course/:courseid" element={<Course />} />
           <Route path="course/:courseid/lesson/:lessonid" element={<Lesson />} />
           <Route path="glossary" element={<Glossary />} />
+          <Route path="profile" element={<Profile />} />
+          <Route path="achievements" element={<Achievements />} />
         </Route>
       </Routes>
-      {showsyncmodal && <SyncModal />}
+      <Chatwidget />
     </BrowserRouter>
   )
 }

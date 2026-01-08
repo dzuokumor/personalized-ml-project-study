@@ -1,15 +1,21 @@
 import { useParams, Link, useNavigate } from 'react-router-dom'
 import { useState, useEffect } from 'react'
-import { courses } from '../data/courses'
+import { getcoursebyid } from '../data/courses'
 import { usestore } from '../store/usestore'
+import { useauth } from '../contexts/authcontext'
 import LessonContent from '../components/course/lessoncontent'
 import Quiz from '../components/course/quiz'
+import Codeexecutor from '../components/course/codeexecutor'
+import Login from '../components/auth/login'
 
-export default function Lesson() {
+export default function lesson() {
   const { courseid, lessonid } = useParams()
   const navigate = useNavigate()
   const [showquiz, setshowquiz] = useState(false)
   const [note, setnote] = useState('')
+  const [showlogin, setshowlogin] = useState(false)
+
+  const { user, loading } = useauth()
 
   const markcomplete = usestore((state) => state.markcomplete)
   const islessonComplete = usestore((state) => state.islessonComplete)
@@ -20,7 +26,7 @@ export default function Lesson() {
   const getnote = usestore((state) => state.getnote)
   const savequizscore = usestore((state) => state.savequizscore)
 
-  const course = courses.find(c => c.id === courseid)
+  const course = getcoursebyid(courseid)
   const lesson = course?.lessons.find(l => l.id === lessonid)
   const lessonidx = course?.lessons.findIndex(l => l.id === lessonid)
 
@@ -38,6 +44,37 @@ export default function Lesson() {
         <Link to="/" className="text-emerald-600 hover:underline mt-4 inline-block">
           Back to home
         </Link>
+      </div>
+    )
+  }
+
+  if (!loading && !user) {
+    return (
+      <div className="max-w-2xl mx-auto text-center py-16">
+        <div className="w-24 h-24 bg-gradient-to-br from-emerald-100 to-emerald-200 rounded-full mx-auto mb-6 flex items-center justify-center">
+          <svg className="w-12 h-12 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+          </svg>
+        </div>
+        <h2 className="text-2xl font-bold text-slate-900 mb-3">Sign in to Access Lessons</h2>
+        <p className="text-slate-500 mb-8 max-w-md mx-auto">
+          Create a free account to unlock all lessons, track your progress, and earn achievements.
+        </p>
+        <div className="flex flex-col sm:flex-row gap-3 justify-center">
+          <button
+            onClick={() => setshowlogin(true)}
+            className="px-8 py-3 bg-emerald-600 text-white font-medium rounded-xl hover:bg-emerald-700 transition-colors"
+          >
+            Sign in to Continue
+          </button>
+          <Link
+            to="/"
+            className="px-8 py-3 bg-slate-100 text-slate-700 font-medium rounded-xl hover:bg-slate-200 transition-colors"
+          >
+            Back to Home
+          </Link>
+        </div>
+        {showlogin && <Login onclose={() => setshowlogin(false)} />}
       </div>
     )
   }
@@ -94,7 +131,7 @@ export default function Lesson() {
         </button>
       </div>
 
-      <div className="bg-white border border-slate-200 rounded-xl p-8 mb-6">
+      <div className="glass-card rounded-xl p-8 mb-6">
         <div className="flex items-center gap-3 mb-4">
           {lesson.concepts.map((concept, idx) => (
             <span key={idx} className="text-xs bg-emerald-100 text-emerald-700 px-2 py-1 rounded-full">
@@ -109,11 +146,11 @@ export default function Lesson() {
 
       {!showquiz ? (
         <>
-          <div className="bg-white border border-slate-200 rounded-xl p-8 mb-6">
+          <div className="glass-card rounded-xl p-8 mb-6">
             <LessonContent content={lesson.content} />
           </div>
 
-          <div className="bg-white border border-slate-200 rounded-xl p-6 mb-6">
+          <div className="glass-card rounded-xl p-6 mb-6">
             <h3 className="text-lg font-semibold text-slate-900 mb-3">Notes</h3>
             <textarea
               defaultValue={existingnote}
@@ -129,8 +166,23 @@ export default function Lesson() {
             </button>
           </div>
 
+          <div className="glass-card rounded-xl p-6 mb-6">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 border-2 border-blue-200 bg-blue-50/50 rounded-xl flex items-center justify-center">
+                <svg className="w-5 h-5 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
+                </svg>
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold text-slate-900">Python Practice</h3>
+                <p className="text-sm text-slate-500">Write and run code to practice concepts</p>
+              </div>
+            </div>
+            <Codeexecutor initialcode={lesson.startercode || '# Practice Python code here\n\n'} />
+          </div>
+
           {lesson.quiz && lesson.quiz.length > 0 && (
-            <div className="bg-white border border-slate-200 rounded-xl p-8 mb-6">
+            <div className="glass-card rounded-xl p-8 mb-6">
               <div className="flex items-center justify-between">
                 <div>
                   <h3 className="text-lg font-semibold text-slate-900">Test Knowledge</h3>
@@ -138,7 +190,7 @@ export default function Lesson() {
                 </div>
                 <button
                   onClick={() => setshowquiz(true)}
-                  className="px-4 py-2 bg-emerald-600 text-white rounded-lg font-medium hover:bg-emerald-700 transition-colors"
+                  className="px-5 py-2.5 btn-primary text-white rounded-xl font-medium"
                 >
                   Start Quiz
                 </button>
@@ -157,7 +209,7 @@ export default function Lesson() {
             </svg>
             Back to lesson
           </button>
-          <Quiz questions={lesson.quiz} onComplete={handlequizcomplete} />
+          <Quiz questions={lesson.quiz} onComplete={handlequizcomplete} coursetitle={lesson.title} />
         </div>
       )}
 

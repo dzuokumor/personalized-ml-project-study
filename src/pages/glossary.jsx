@@ -28,7 +28,7 @@ export default function Glossary() {
             value={search}
             onChange={(e) => setsearch(e.target.value)}
             placeholder="Search terms..."
-            className="w-full px-4 py-2 bg-white border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500"
+            className="w-full px-4 py-2.5 search-input rounded-xl text-sm focus:outline-none"
           />
         </div>
         <div className="flex gap-2 flex-wrap">
@@ -36,10 +36,10 @@ export default function Glossary() {
             <button
               key={category}
               onClick={() => setselectedcategory(category)}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors capitalize ${
+              className={`px-4 py-2 rounded-xl text-sm font-medium transition-all capitalize ${
                 selectedcategory === category
-                  ? 'bg-emerald-600 text-white'
-                  : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50'
+                  ? 'btn-primary text-white'
+                  : 'glass-card text-slate-600 hover:bg-white/90'
               }`}
             >
               {category}
@@ -50,7 +50,7 @@ export default function Glossary() {
 
       <div className="space-y-4">
         {filtered.map((item, idx) => (
-          <div key={idx} className="bg-white border border-slate-200 rounded-xl p-6">
+          <div key={idx} className="glass-card rounded-xl p-6 card-hover">
             <div className="flex items-start justify-between mb-2">
               <h3 className="text-lg font-semibold text-slate-900">{item.term}</h3>
               <span className="text-xs bg-slate-100 text-slate-600 px-2 py-1 rounded-full capitalize">

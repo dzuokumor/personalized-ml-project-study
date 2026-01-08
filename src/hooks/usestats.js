@@ -1,0 +1,212 @@
+import { useState, useEffect, useCallback } from 'react'
+import { supabase } from '../lib/supabase'
+import { useauth } from '../contexts/authcontext'
+
+const xpvalues = {
+  lessoncomplete: 10,
+  quizpass: 20,
+  quizperfect: 35,
+  streakday: 5,
+  coursecomplete: 100,
+  pathcomplete: 250
+}
+
+const levels = [
+  { level: 1, xp: 0, title: 'Novice' },
+  { level: 2, xp: 50, title: 'Learner' },
+  { level: 3, xp: 150, title: 'Student' },
+  { level: 4, xp: 300, title: 'Practitioner' },
+  { level: 5, xp: 500, title: 'Explorer' },
+  { level: 6, xp: 750, title: 'Adept' },
+  { level: 7, xp: 1050, title: 'Specialist' },
+  { level: 8, xp: 1400, title: 'Expert' },
+  { level: 9, xp: 1800, title: 'Master' },
+  { level: 10, xp: 2250, title: 'Sage' },
+  { level: 11, xp: 2750, title: 'Grandmaster' },
+  { level: 12, xp: 3300, title: 'Legend' }
+]
+
+const achievements = [
+  { id: 'first-lesson', title: 'First Steps', description: 'Complete your first lesson', icon: 'star', condition: (stats) => stats.lessonsCompleted >= 1 },
+  { id: 'ten-lessons', title: 'Dedicated Learner', description: 'Complete 10 lessons', icon: 'fire', condition: (stats) => stats.lessonsCompleted >= 10 },
+  { id: 'fifty-lessons', title: 'Knowledge Seeker', description: 'Complete 50 lessons', icon: 'trophy', condition: (stats) => stats.lessonsCompleted >= 50 },
+  { id: 'first-quiz', title: 'Quiz Taker', description: 'Pass your first quiz', icon: 'check', condition: (stats) => stats.quizzesPassed >= 1 },
+  { id: 'perfect-quiz', title: 'Perfect Score', description: 'Get 100% on a quiz', icon: 'crown', condition: (stats) => stats.perfectQuizzes >= 1 },
+  { id: 'three-streak', title: 'On Fire', description: 'Maintain a 3-day streak', icon: 'flame', condition: (stats) => stats.currentStreak >= 3 },
+  { id: 'seven-streak', title: 'Week Warrior', description: 'Maintain a 7-day streak', icon: 'calendar', condition: (stats) => stats.currentStreak >= 7 },
+  { id: 'thirty-streak', title: 'Monthly Master', description: 'Maintain a 30-day streak', icon: 'medal', condition: (stats) => stats.currentStreak >= 30 },
+  { id: 'first-course', title: 'Course Complete', description: 'Complete your first course', icon: 'book', condition: (stats) => stats.coursesCompleted >= 1 },
+  { id: 'first-path', title: 'Pathfinder', description: 'Complete a learning path', icon: 'map', condition: (stats) => stats.pathsCompleted >= 1 },
+  { id: 'math-master', title: 'Math Master', description: 'Complete Mathematics for ML', icon: 'calculator', condition: (stats) => stats.completedCourses?.includes('math-for-ml') },
+  { id: 'python-pro', title: 'Python Pro', description: 'Complete Python for ML', icon: 'code', condition: (stats) => stats.completedCourses?.includes('python-for-ml') },
+  { id: 'neural-ninja', title: 'Neural Ninja', description: 'Complete Neural Network Fundamentals', icon: 'brain', condition: (stats) => stats.completedCourses?.includes('neural-network-fundamentals') },
+  { id: 'transformer-titan', title: 'Transformer Titan', description: 'Complete Attention & Transformers', icon: 'zap', condition: (stats) => stats.completedCourses?.includes('attention-transformers') }
+]
+
+export function usestats() {
+  const { user } = useauth()
+  const [stats, setstats] = useState({
+    xp: 0,
+    level: 1,
+    title: 'Novice',
+    currentStreak: 0,
+    longestStreak: 0,
+    lastActivityDate: null,
+    lessonsCompleted: 0,
+    quizzesPassed: 0,
+    perfectQuizzes: 0,
+    coursesCompleted: 0,
+    pathsCompleted: 0,
+    completedCourses: [],
+    unlockedAchievements: [],
+    totalTimeSpent: 0
+  })
+  const [loading, setloading] = useState(true)
+
+  const getlevel = (xp) => {
+    let current = levels[0]
+    for (const level of levels) {
+      if (xp >= level.xp) current = level
+      else break
+    }
+    return current
+  }
+
+  const getnextlevel = (currentlevel) => {
+    const idx = levels.findIndex(l => l.level === currentlevel)
+    return idx < levels.length - 1 ? levels[idx + 1] : null
+  }
+
+  useEffect(() => {
+    const loadstats = () => {
+      const saved = localStorage.getItem('ml-user-stats')
+      if (saved) {
+        try {
+          const parsed = JSON.parse(saved)
+          const level = getlevel(parsed.xp || 0)
+          setstats({ ...parsed, level: level.level, title: level.title })
+        } catch (e) {
+          setstats(prev => prev)
+        }
+      }
+      setloading(false)
+    }
+
+    loadstats()
+    checkstreak()
+  }, [user])
+
+  const savestats = useCallback((newstats) => {
+    const level = getlevel(newstats.xp)
+    const updated = { ...newstats, level: level.level, title: level.title }
+    setstats(updated)
+    localStorage.setItem('ml-user-stats', JSON.stringify(updated))
+    return updated
+  }, [])
+
+  const checkstreak = useCallback(() => {
+    const today = new Date().toDateString()
+    const lastactivity = stats.lastActivityDate
+
+    if (!lastactivity) return
+
+    const lastdate = new Date(lastactivity)
+    const yesterday = new Date()
+    yesterday.setDate(yesterday.getDate() - 1)
+
+    if (lastdate.toDateString() === yesterday.toDateString()) {
+      return
+    } else if (lastdate.toDateString() !== today) {
+      savestats({ ...stats, currentStreak: 0 })
+    }
+  }, [stats, savestats])
+
+  const recordactivity = useCallback(() => {
+    const today = new Date().toDateString()
+    const lastactivity = stats.lastActivityDate
+
+    let newstreak = stats.currentStreak
+
+    if (!lastactivity || new Date(lastactivity).toDateString() !== today) {
+      const yesterday = new Date()
+      yesterday.setDate(yesterday.getDate() - 1)
+
+      if (lastactivity && new Date(lastactivity).toDateString() === yesterday.toDateString()) {
+        newstreak = stats.currentStreak + 1
+      } else if (!lastactivity || new Date(lastactivity).toDateString() !== today) {
+        newstreak = 1
+      }
+    }
+
+    const newstats = {
+      ...stats,
+      currentStreak: newstreak,
+      longestStreak: Math.max(stats.longestStreak, newstreak),
+      lastActivityDate: today,
+      xp: stats.xp + (newstreak > stats.currentStreak ? xpvalues.streakday : 0)
+    }
+
+    return savestats(newstats)
+  }, [stats, savestats])
+
+  const addxp = useCallback((amount, reason) => {
+    const updated = recordactivity()
+    return savestats({ ...updated, xp: updated.xp + amount })
+  }, [recordactivity, savestats])
+
+  const completelesson = useCallback((courseid, lessonid) => {
+    const updated = addxp(xpvalues.lessoncomplete, 'lesson')
+    return savestats({
+      ...updated,
+      lessonsCompleted: updated.lessonsCompleted + 1
+    })
+  }, [addxp, savestats])
+
+  const passquiz = useCallback((score, total) => {
+    const isperfect = score === total
+    const xpgained = isperfect ? xpvalues.quizperfect : xpvalues.quizpass
+    const updated = addxp(xpgained, 'quiz')
+
+    return savestats({
+      ...updated,
+      quizzesPassed: updated.quizzesPassed + 1,
+      perfectQuizzes: isperfect ? updated.perfectQuizzes + 1 : updated.perfectQuizzes
+    })
+  }, [addxp, savestats])
+
+  const completecourse = useCallback((courseid) => {
+    const updated = addxp(xpvalues.coursecomplete, 'course')
+    return savestats({
+      ...updated,
+      coursesCompleted: updated.coursesCompleted + 1,
+      completedCourses: [...(updated.completedCourses || []), courseid]
+    })
+  }, [addxp, savestats])
+
+  const getunlockedachievements = useCallback(() => {
+    return achievements.filter(a => a.condition(stats))
+  }, [stats])
+
+  const getnewachievements = useCallback((prevstats) => {
+    const prevunlocked = achievements.filter(a => a.condition(prevstats)).map(a => a.id)
+    const currentunlocked = achievements.filter(a => a.condition(stats)).map(a => a.id)
+    return currentunlocked.filter(id => !prevunlocked.includes(id))
+  }, [stats])
+
+  return {
+    stats,
+    loading,
+    levels,
+    achievements,
+    xpvalues,
+    getlevel,
+    getnextlevel,
+    addxp,
+    completelesson,
+    passquiz,
+    completecourse,
+    recordactivity,
+    getunlockedachievements,
+    getnewachievements
+  }
+}
