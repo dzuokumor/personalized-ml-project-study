@@ -15,17 +15,26 @@ export const Authprovider = ({ children }) => {
   const [user, setuser] = useState(null)
   const [loading, setloading] = useState(true)
   const [avatar, setavatar] = useState(null)
+  const [githubtoken, setgithubtoken] = useState(null)
+  const [githubconnected, setgithubconnected] = useState(false)
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setuser(session?.user ?? null)
       setavatar(session?.user?.user_metadata?.custom_avatar_url ?? session?.user?.user_metadata?.avatar_url ?? null)
+      if (session?.provider_token && session?.user?.app_metadata?.provider === 'github') {
+        setgithubtoken(session.provider_token)
+        setgithubconnected(true)
+      }
       setloading(false)
     })
 
     supabase.auth.getSession().then(({ data: { session } }) => {
       setuser(session?.user ?? null)
       setavatar(session?.user?.user_metadata?.custom_avatar_url ?? session?.user?.user_metadata?.avatar_url ?? null)
+      const isgithubuser = session?.user?.app_metadata?.provider === 'github' ||
+                          session?.user?.identities?.some(i => i.provider === 'github')
+      setgithubconnected(isgithubuser)
       setloading(false)
     })
 
@@ -63,6 +72,18 @@ export const Authprovider = ({ children }) => {
       provider: 'github',
       options: {
         redirectTo: window.location.origin,
+        scopes: 'repo',
+      },
+    })
+    return { data, error }
+  }
+
+  const connectgithubforrepos = async () => {
+    const { data, error } = await supabase.auth.signInWithOAuth({
+      provider: 'github',
+      options: {
+        redirectTo: `${window.location.origin}/profile?tab=github`,
+        scopes: 'repo',
       },
     })
     return { data, error }
@@ -87,10 +108,13 @@ export const Authprovider = ({ children }) => {
     user,
     loading,
     avatar,
+    githubtoken,
+    githubconnected,
     signup,
     signin,
     signinwithgoogle,
     signinwithgithub,
+    connectgithubforrepos,
     signout,
     updateavatar,
   }

@@ -12,17 +12,37 @@ class timeoutexception(Exception):
 def timeout_handler(signum, frame):
     raise timeoutexception("Code execution timed out")
 
+allowed_import_names = [
+    'numpy', 'np', 'pandas', 'pd',
+    'math', 'random', 'statistics',
+    'collections', 'itertools', 'functools',
+    'json', 're', 'string', 'textwrap',
+    'datetime', 'time', 'calendar',
+    'decimal', 'fractions',
+    'copy', 'pprint',
+    'typing', 'dataclasses',
+    'enum', 'operator',
+    'heapq', 'bisect',
+    'csv', 'base64', 'hashlib', 'hmac',
+    'html', 'unicodedata',
+    'difflib', 'struct', 'codecs',
+    'abc', 'contextlib',
+    'warnings', 'traceback',
+]
+
 forbidden_imports = [
     'os', 'sys', 'subprocess', 'shutil', 'pathlib',
-    'socket', 'urllib', 'requests', 'http',
-    'pickle', 'shelve', 'dbm',
-    'ctypes', 'multiprocessing', 'threading',
-    'importlib', '__import__', 'exec', 'eval', 'compile',
-    'open', 'file', 'input'
+    'socket', 'urllib', 'requests', 'http', 'ftplib', 'smtplib',
+    'pickle', 'shelve', 'dbm', 'sqlite3',
+    'ctypes', 'multiprocessing', 'threading', 'concurrent',
+    'importlib', 'runpy', 'zipimport',
+    'code', 'codeop', 'pty', 'tty', 'termios',
+    'signal', 'mmap', 'fcntl', 'resource',
+    'builtins', 'gc', 'inspect', 'dis', 'ast',
 ]
 
 forbidden_attrs = [
-    '__import__', '__builtins__', '__code__', '__globals__',
+    '__builtins__', '__code__', '__globals__',
     '__subclasses__', '__mro__', '__bases__'
 ]
 
@@ -38,16 +58,20 @@ def check_code_safety(code):
                 module = alias.name.split('.')[0]
                 if module in forbidden_imports:
                     return False, f"Import of '{module}' is not allowed for security reasons"
+                if module not in allowed_import_names:
+                    return False, f"Import of '{module}' is not allowed. Allowed: numpy, pandas, math, json, datetime, re, collections, and other safe stdlib modules"
 
         elif isinstance(node, ast.ImportFrom):
             if node.module:
                 module = node.module.split('.')[0]
                 if module in forbidden_imports:
                     return False, f"Import from '{module}' is not allowed for security reasons"
+                if module not in allowed_import_names:
+                    return False, f"Import from '{module}' is not allowed. Allowed: numpy, pandas, math, json, datetime, re, collections, and other safe stdlib modules"
 
         elif isinstance(node, ast.Call):
             if isinstance(node.func, ast.Name):
-                if node.func.id in ['exec', 'eval', 'compile', 'open', 'input', '__import__']:
+                if node.func.id in ['exec', 'eval', 'compile', 'open', 'input']:
                     return False, f"Function '{node.func.id}' is not allowed for security reasons"
 
         elif isinstance(node, ast.Attribute):
@@ -99,6 +123,29 @@ def execute_code(code):
 
     allowed_modules = {}
 
+    stdlib_modules = [
+        'math', 'random', 'statistics',
+        'collections', 'itertools', 'functools',
+        'json', 're', 'string', 'textwrap',
+        'datetime', 'time', 'calendar',
+        'decimal', 'fractions',
+        'copy', 'pprint',
+        'typing', 'dataclasses',
+        'enum', 'operator',
+        'heapq', 'bisect',
+        'csv', 'base64', 'hashlib', 'hmac',
+        'html', 'unicodedata',
+        'difflib', 'struct', 'codecs',
+        'abc', 'contextlib',
+        'warnings', 'traceback',
+    ]
+
+    for mod_name in stdlib_modules:
+        try:
+            allowed_modules[mod_name] = __import__(mod_name)
+        except ImportError:
+            pass
+
     try:
         import numpy as np
         allowed_modules['numpy'] = np
@@ -107,22 +154,18 @@ def execute_code(code):
         pass
 
     try:
-        import math
-        allowed_modules['math'] = math
+        import pandas as pd
+        allowed_modules['pandas'] = pd
+        allowed_modules['pd'] = pd
     except ImportError:
         pass
 
-    try:
-        import random
-        allowed_modules['random'] = random
-    except ImportError:
-        pass
+    def safe_import(name, globals=None, locals=None, fromlist=(), level=0):
+        if name in allowed_modules:
+            return allowed_modules[name]
+        raise ImportError(f"Import of '{name}' is not allowed. Allowed: numpy, pandas, math, random, json, datetime, collections, itertools, functools, and other safe stdlib modules")
 
-    try:
-        import statistics
-        allowed_modules['statistics'] = statistics
-    except ImportError:
-        pass
+    safe_builtins['__import__'] = safe_import
 
     exec_globals = {'__builtins__': safe_builtins, **allowed_modules}
     exec_locals = {}

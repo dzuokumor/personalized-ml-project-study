@@ -28,7 +28,7 @@ Be encouraging but accurate. If you don't know something, say so."""
             api_key = os.environ.get('OPENROUTER_API_KEY', '')
 
             request_data = json.dumps({
-                "model": "meta-llama/llama-3.1-8b-instruct:free",
+                "model": "meta-llama/llama-3.2-3b-instruct:free",
                 "messages": api_messages,
                 "max_tokens": 1024,
                 "temperature": 0.7

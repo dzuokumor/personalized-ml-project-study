@@ -7,6 +7,7 @@ import { learningpaths } from '../data/learningpaths'
 import { Link } from 'react-router-dom'
 import Certificate from '../components/certificate/certificate'
 import Avatarupload from '../components/profile/avatarupload'
+import { getcardurl, getbadgeurl, generatecardmarkdown, generatebadgemarkdown } from '../services/github'
 
 const achievementicons = {
   star: (
@@ -82,12 +83,14 @@ const achievementicons = {
 }
 
 export default function profile() {
-  const { user, signout, avatar } = useauth()
+  const { user, signout, avatar, githubconnected, connectgithubforrepos } = useauth()
   const { stats, levels, achievements, getunlockedachievements, getnextlevel } = usestats()
   const progress = usestore((state) => state.progress)
   const quizscores = usestore((state) => state.quizscores)
   const [activeTab, setactiveTab] = useState('overview')
   const [showcertificate, setshowcertificate] = useState(false)
+  const [copied, setcopied] = useState(null)
+  const [cardtheme, setcardtheme] = useState('light')
 
   const unlockedachievements = getunlockedachievements()
   const nextlevel = getnextlevel(stats.level)
@@ -124,9 +127,27 @@ export default function profile() {
   const courseprogress = getcourseprogress()
   const curriculumprogress = getcurriculumprogress()
   const totalhours = learningpaths.reduce((sum, path) => sum + path.estimatedhours, 0)
+  const completedcourses = courseprogress.filter(c => c.percent === 100)
 
   const handleSignout = async () => {
     await signout()
+  }
+
+  const copytoClipboard = async (text, id) => {
+    await navigator.clipboard.writeText(text)
+    setcopied(id)
+    setTimeout(() => setcopied(null), 2000)
+  }
+
+  const username = user?.email?.split('@')[0] || 'learner'
+  const cardprops = {
+    username,
+    level: stats.level.toString(),
+    xp: stats.xp.toString(),
+    streak: stats.currentStreak.toString(),
+    lessons: stats.lessonsCompleted.toString(),
+    courses: completedcourses.length.toString(),
+    theme: cardtheme
   }
 
   if (!user) {
@@ -193,16 +214,16 @@ export default function profile() {
         </div>
       </div>
 
-      <div className="flex gap-2 mb-6 border-b border-slate-200">
-        {['overview', 'achievements', 'courses', 'settings'].map(tab => (
+      <div className="flex gap-2 mb-6 border-b border-slate-200 overflow-x-auto">
+        {['overview', 'achievements', 'courses', 'github', 'settings'].map(tab => (
           <button
             key={tab}
             onClick={() => setactiveTab(tab)}
-            className={`px-6 py-3 font-medium capitalize transition-colors relative ${
+            className={`px-6 py-3 font-medium capitalize transition-colors relative whitespace-nowrap ${
               activeTab === tab ? 'text-emerald-600' : 'text-slate-500 hover:text-slate-700'
             }`}
           >
-            {tab}
+            {tab === 'github' ? 'GitHub & Share' : tab}
             {activeTab === tab && (
               <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-emerald-600"/>
             )}
@@ -373,6 +394,174 @@ export default function profile() {
                 </Link>
               </div>
             ))
+          )}
+        </div>
+      )}
+
+      {activeTab === 'github' && (
+        <div className="space-y-6">
+          <div className="glass-card rounded-xl p-6">
+            <div className="flex items-center justify-between mb-6">
+              <div>
+                <h3 className="text-lg font-semibold text-slate-900">GitHub Connection</h3>
+                <p className="text-sm text-slate-500">Connect GitHub to push projects and showcase your work</p>
+              </div>
+              {githubconnected ? (
+                <span className="flex items-center gap-2 px-4 py-2 bg-emerald-50 text-emerald-700 rounded-lg text-sm font-medium">
+                  <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
+                  </svg>
+                  Connected
+                </span>
+              ) : (
+                <button
+                  onClick={connectgithubforrepos}
+                  className="flex items-center gap-2 px-4 py-2 bg-slate-900 text-white rounded-lg text-sm font-medium hover:bg-slate-800 transition-colors"
+                >
+                  <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                  </svg>
+                  Connect GitHub
+                </button>
+              )}
+            </div>
+          </div>
+
+          <div className="glass-card rounded-xl p-6">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold text-slate-900">Profile Card</h3>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => setcardtheme('light')}
+                  className={`px-3 py-1 text-sm rounded-lg transition-colors ${cardtheme === 'light' ? 'bg-slate-900 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}
+                >
+                  Light
+                </button>
+                <button
+                  onClick={() => setcardtheme('dark')}
+                  className={`px-3 py-1 text-sm rounded-lg transition-colors ${cardtheme === 'dark' ? 'bg-slate-900 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}
+                >
+                  Dark
+                </button>
+              </div>
+            </div>
+            <p className="text-sm text-slate-500 mb-4">Add this card to your GitHub profile README to showcase your ML learning progress</p>
+            <div className={`rounded-xl p-4 mb-4 ${cardtheme === 'dark' ? 'bg-slate-900' : 'bg-slate-50'}`}>
+              <img src={getcardurl(cardprops)} alt="Neuron Profile Card" className="w-full max-w-md mx-auto" />
+            </div>
+            <div className="bg-slate-50 rounded-lg p-4">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-sm font-medium text-slate-600">Markdown</span>
+                <button
+                  onClick={() => copytoClipboard(generatecardmarkdown(cardprops), 'card')}
+                  className="text-sm text-emerald-600 hover:text-emerald-700 font-medium flex items-center gap-1"
+                >
+                  {copied === 'card' ? (
+                    <>
+                      <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg>
+                      Copied!
+                    </>
+                  ) : (
+                    <>
+                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+                      Copy
+                    </>
+                  )}
+                </button>
+              </div>
+              <code className="text-xs text-slate-600 break-all">{generatecardmarkdown(cardprops)}</code>
+            </div>
+          </div>
+
+          <div className="glass-card rounded-xl p-6">
+            <h3 className="text-lg font-semibold text-slate-900 mb-4">Achievement Badges</h3>
+            <p className="text-sm text-slate-500 mb-4">Add individual badges to your README</p>
+            <div className="space-y-4">
+              <div className="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
+                <div className="flex items-center gap-3">
+                  <img src={getbadgeurl('level', stats.level, 'light')} alt="Level badge" />
+                </div>
+                <button
+                  onClick={() => copytoClipboard(generatebadgemarkdown('level', stats.level, 'light'), 'level')}
+                  className="text-sm text-emerald-600 hover:text-emerald-700 font-medium"
+                >
+                  {copied === 'level' ? 'Copied!' : 'Copy'}
+                </button>
+              </div>
+              <div className="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
+                <div className="flex items-center gap-3">
+                  <img src={getbadgeurl('xp', stats.xp.toLocaleString(), 'light')} alt="XP badge" />
+                </div>
+                <button
+                  onClick={() => copytoClipboard(generatebadgemarkdown('xp', stats.xp.toLocaleString(), 'light'), 'xp')}
+                  className="text-sm text-emerald-600 hover:text-emerald-700 font-medium"
+                >
+                  {copied === 'xp' ? 'Copied!' : 'Copy'}
+                </button>
+              </div>
+              <div className="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
+                <div className="flex items-center gap-3">
+                  <img src={getbadgeurl('streak', `${stats.currentStreak} days`, 'light')} alt="Streak badge" />
+                </div>
+                <button
+                  onClick={() => copytoClipboard(generatebadgemarkdown('streak', `${stats.currentStreak} days`, 'light'), 'streak')}
+                  className="text-sm text-emerald-600 hover:text-emerald-700 font-medium"
+                >
+                  {copied === 'streak' ? 'Copied!' : 'Copy'}
+                </button>
+              </div>
+              {completedcourses.map(course => (
+                <div key={course.id} className="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
+                  <div className="flex items-center gap-3">
+                    <img src={getbadgeurl('course', course.title.substring(0, 20), 'light')} alt={`${course.title} badge`} />
+                  </div>
+                  <button
+                    onClick={() => copytoClipboard(generatebadgemarkdown('course', course.title.substring(0, 20), 'light'), `course-${course.id}`)}
+                    className="text-sm text-emerald-600 hover:text-emerald-700 font-medium"
+                  >
+                    {copied === `course-${course.id}` ? 'Copied!' : 'Copy'}
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {completedcourses.length > 0 && (
+            <div className="glass-card rounded-xl p-6">
+              <h3 className="text-lg font-semibold text-slate-900 mb-4">Push Projects to GitHub</h3>
+              <p className="text-sm text-slate-500 mb-4">Create repositories from your completed projects to showcase on GitHub</p>
+              {!githubconnected ? (
+                <div className="text-center py-8 bg-slate-50 rounded-xl">
+                  <p className="text-slate-500 mb-4">Connect GitHub to push your projects</p>
+                  <button
+                    onClick={connectgithubforrepos}
+                    className="inline-flex items-center gap-2 px-4 py-2 bg-slate-900 text-white rounded-lg text-sm font-medium hover:bg-slate-800 transition-colors"
+                  >
+                    <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                    </svg>
+                    Connect GitHub
+                  </button>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {completedcourses.map(course => (
+                    <div key={course.id} className="flex items-center justify-between p-4 bg-slate-50 rounded-xl">
+                      <div>
+                        <h4 className="font-medium text-slate-900">{course.title}</h4>
+                        <p className="text-sm text-slate-500">{course.total} lessons completed</p>
+                      </div>
+                      <Link
+                        to={`/course/${course.id}`}
+                        className="px-4 py-2 bg-emerald-600 text-white rounded-lg text-sm font-medium hover:bg-emerald-700 transition-colors"
+                      >
+                        View Project
+                      </Link>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
           )}
         </div>
       )}
