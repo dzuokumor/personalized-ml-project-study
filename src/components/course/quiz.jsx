@@ -4,7 +4,7 @@ import { useauth } from '../../contexts/authcontext'
 
 const optionlabels = ['A', 'B', 'C', 'D', 'E', 'F']
 
-export default function Quiz({ questions, onComplete, coursetitle = 'Assessment' }) {
+export default function Quiz({ questions = [], onComplete, coursetitle = 'Assessment' }) {
   const { githubconnected, connectgithubforrepos } = useauth()
   const [currentidx, setcurrentidx] = useState(0)
   const [selected, setselected] = useState(null)
@@ -14,8 +14,9 @@ export default function Quiz({ questions, onComplete, coursetitle = 'Assessment'
   const [timeelapsed, settimeelapsed] = useState(0)
   const [starttime] = useState(Date.now())
 
-  const current = questions[currentidx]
-  const score = answers.filter((a, i) => a === questions[i].correct).length
+  const hasquestions = questions && questions.length > 0
+  const current = hasquestions ? questions[currentidx] : null
+  const score = hasquestions ? answers.filter((a, i) => questions[i] && a === questions[i].correct).length : 0
 
   useEffect(() => {
     if (completed) return
@@ -24,6 +25,10 @@ export default function Quiz({ questions, onComplete, coursetitle = 'Assessment'
     }, 1000)
     return () => clearInterval(interval)
   }, [completed, starttime])
+
+  if (!hasquestions) {
+    return <div className="text-center py-8 text-slate-500">No questions available</div>
+  }
 
   const formattime = (seconds) => {
     const mins = Math.floor(seconds / 60)
@@ -50,14 +55,14 @@ export default function Quiz({ questions, onComplete, coursetitle = 'Assessment'
     } else {
       setcompleted(true)
       const finalscore = answers.length > 0
-        ? answers.filter((a, i) => a === questions[i].correct).length + (selected === current.correct ? 1 : 0)
-        : (selected === current.correct ? 1 : 0)
+        ? answers.filter((a, i) => questions[i] && a === questions[i].correct).length + (current && selected === current.correct ? 1 : 0)
+        : (current && selected === current.correct ? 1 : 0)
       if (onComplete) onComplete(finalscore)
     }
   }
 
   if (completed) {
-    const finalscore = score + (answers.length < questions.length && selected === current.correct ? 1 : 0)
+    const finalscore = score + (answers.length < questions.length && current && selected === current.correct ? 1 : 0)
     const percentage = Math.round((finalscore / questions.length) * 100)
     const passed = percentage >= 70
     const avgtime = Math.round(timeelapsed / questions.length)
@@ -197,6 +202,10 @@ export default function Quiz({ questions, onComplete, coursetitle = 'Assessment'
         </div>
       </div>
     )
+  }
+
+  if (!current) {
+    return <div className="text-center py-8 text-slate-500">Loading question...</div>
   }
 
   return (
