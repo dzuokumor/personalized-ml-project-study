@@ -54,9 +54,7 @@ export default function Quiz({ questions = [], onComplete, coursetitle = 'Assess
       setshowresult(false)
     } else {
       setcompleted(true)
-      const finalscore = answers.length > 0
-        ? answers.filter((a, i) => questions[i] && a === questions[i].correct).length + (current && selected === current.correct ? 1 : 0)
-        : (current && selected === current.correct ? 1 : 0)
+      const finalscore = answers.filter((a, i) => questions[i] && a === questions[i].correct).length
       if (onComplete) onComplete(finalscore)
     }
   }

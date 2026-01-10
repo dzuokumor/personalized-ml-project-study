@@ -27,7 +27,7 @@ export default function statscard({ username = 'Learner', level = '1', xp = '0',
   const c = colors[theme] || colors.light
 
   return (
-    <svg xmlns="http://www.w3.org/2000/svg" width="400" height="140" viewBox="0 0 400 140">
+    <svg xmlns="http://www.w3.org/2000/svg" width="400" height="200" viewBox="0 0 400 200">
       <defs>
         <linearGradient id={`card-grad-${theme}`} x1="0%" y1="0%" x2="100%" y2="100%">
           <stop offset="0%" stopColor={c.accent} />
@@ -39,50 +39,58 @@ export default function statscard({ username = 'Learner', level = '1', xp = '0',
         </linearGradient>
       </defs>
 
-      <rect width="400" height="140" rx="12" fill={`url(#card-bg-${theme})`} stroke={c.line} strokeWidth="1"/>
+      <rect width="400" height="200" rx="12" fill={`url(#card-bg-${theme})`} stroke={c.line} strokeWidth="1"/>
 
-      <g opacity="0.08">
-        <line x1="320" y1="20" x2="350" y2="35" stroke={c.accent} strokeWidth="1.5"/>
-        <line x1="350" y1="35" x2="380" y2="25" stroke={c.accent} strokeWidth="1.5"/>
-        <line x1="350" y1="35" x2="370" y2="55" stroke={c.accent} strokeWidth="1.5"/>
-        <circle cx="320" cy="20" r="4" fill={c.accent}/>
-        <circle cx="350" cy="35" r="5" fill={c.accent}/>
-        <circle cx="380" cy="25" r="3" fill={c.accent}/>
-        <circle cx="370" cy="55" r="3" fill={c.accent}/>
+      <g opacity="0.15">
+        <line x1="300" y1="30" x2="330" y2="50" stroke={c.accent} strokeWidth="1.5"/>
+        <line x1="330" y1="50" x2="360" y2="35" stroke={c.accent} strokeWidth="1.5"/>
+        <line x1="330" y1="50" x2="350" y2="75" stroke={c.accent} strokeWidth="1.5"/>
+        <line x1="360" y1="35" x2="380" y2="55" stroke={c.accent} strokeWidth="1.5"/>
+        <circle cx="300" cy="30" r="4" fill={c.accent}/>
+        <circle cx="330" cy="50" r="5" fill={c.accent}/>
+        <circle cx="360" cy="35" r="4" fill={c.accent}/>
+        <circle cx="350" cy="75" r="3" fill={c.accent}/>
+        <circle cx="380" cy="55" r="3" fill={c.accent}/>
       </g>
 
-      <rect x="16" y="16" width="4" height="40" rx="2" fill={`url(#card-grad-${theme})`}/>
-
-      <text x="32" y="36" fontFamily="system-ui, -apple-system, sans-serif" fontSize="18" fontWeight="700" fill={c.text}>{username}</text>
-      <text x="32" y="52" fontFamily="system-ui, -apple-system, sans-serif" fontSize="11" fill={c.muted}>Neuron ML Learning</text>
-
-      <g transform="translate(16, 75)">
-        <rect width="88" height="48" rx="8" fill={c.statBg}/>
-        <text x="44" y="20" fontFamily="system-ui, -apple-system, sans-serif" fontSize="16" fontWeight="700" fill={c.accent} textAnchor="middle">{xp}</text>
-        <text x="44" y="36" fontFamily="system-ui, -apple-system, sans-serif" fontSize="9" fontWeight="500" fill={c.muted} textAnchor="middle">XP EARNED</text>
+      <circle cx="50" cy="55" r="30" fill={`url(#card-grad-${theme})`}/>
+      <g transform="translate(50, 55)">
+        <circle cx="-8" cy="-8" r="4" fill="white" opacity="0.9"/>
+        <circle cx="8" cy="-8" r="4" fill="white" opacity="0.9"/>
+        <circle cx="0" cy="8" r="4" fill="white" opacity="0.9"/>
+        <line x1="-8" y1="-8" x2="8" y2="-8" stroke="white" strokeWidth="1.5" opacity="0.7"/>
+        <line x1="-8" y1="-8" x2="0" y2="8" stroke="white" strokeWidth="1.5" opacity="0.7"/>
+        <line x1="8" y1="-8" x2="0" y2="8" stroke="white" strokeWidth="1.5" opacity="0.7"/>
       </g>
 
-      <g transform="translate(112, 75)">
-        <rect width="88" height="48" rx="8" fill={c.statBg}/>
-        <text x="44" y="20" fontFamily="system-ui, -apple-system, sans-serif" fontSize="16" fontWeight="700" fill={c.accent} textAnchor="middle">{streak}</text>
-        <text x="44" y="36" fontFamily="system-ui, -apple-system, sans-serif" fontSize="9" fontWeight="500" fill={c.muted} textAnchor="middle">DAY STREAK</text>
+      <text x="95" y="45" fontFamily="system-ui, -apple-system, sans-serif" fontSize="18" fontWeight="700" fill={c.text}>{username}</text>
+      <text x="95" y="65" fontFamily="system-ui, -apple-system, sans-serif" fontSize="12" fill={c.muted}>Neuron ML Learning</text>
+      <text x="95" y="82" fontFamily="system-ui, -apple-system, sans-serif" fontSize="11" fontWeight="600" fill={c.accent}>Level {level}</text>
+
+      <line x1="20" y1="110" x2="380" y2="110" stroke={c.line} strokeWidth="1" strokeDasharray="4 4"/>
+
+      <g transform="translate(20, 125)">
+        <rect width="85" height="55" rx="10" fill={c.statBg}/>
+        <text x="42.5" y="25" fontFamily="system-ui, -apple-system, sans-serif" fontSize="18" fontWeight="700" fill={c.accent} textAnchor="middle">{xp}</text>
+        <text x="42.5" y="42" fontFamily="system-ui, -apple-system, sans-serif" fontSize="9" fontWeight="600" fill={c.muted} textAnchor="middle">TOTAL XP</text>
       </g>
 
-      <g transform="translate(208, 75)">
-        <rect width="88" height="48" rx="8" fill={c.statBg}/>
-        <text x="44" y="20" fontFamily="system-ui, -apple-system, sans-serif" fontSize="16" fontWeight="700" fill={c.accent} textAnchor="middle">{lessons}</text>
-        <text x="44" y="36" fontFamily="system-ui, -apple-system, sans-serif" fontSize="9" fontWeight="500" fill={c.muted} textAnchor="middle">LESSONS</text>
+      <g transform="translate(115, 125)">
+        <rect width="85" height="55" rx="10" fill={c.statBg}/>
+        <text x="42.5" y="25" fontFamily="system-ui, -apple-system, sans-serif" fontSize="18" fontWeight="700" fill={c.accent} textAnchor="middle">{streak}</text>
+        <text x="42.5" y="42" fontFamily="system-ui, -apple-system, sans-serif" fontSize="9" fontWeight="600" fill={c.muted} textAnchor="middle">DAY STREAK</text>
       </g>
 
-      <g transform="translate(304, 75)">
-        <rect width="80" height="48" rx="8" fill={c.statBg}/>
-        <text x="40" y="20" fontFamily="system-ui, -apple-system, sans-serif" fontSize="16" fontWeight="700" fill={c.accent} textAnchor="middle">{courses}</text>
-        <text x="40" y="36" fontFamily="system-ui, -apple-system, sans-serif" fontSize="9" fontWeight="500" fill={c.muted} textAnchor="middle">COURSES</text>
+      <g transform="translate(210, 125)">
+        <rect width="85" height="55" rx="10" fill={c.statBg}/>
+        <text x="42.5" y="25" fontFamily="system-ui, -apple-system, sans-serif" fontSize="18" fontWeight="700" fill={c.accent} textAnchor="middle">{lessons}</text>
+        <text x="42.5" y="42" fontFamily="system-ui, -apple-system, sans-serif" fontSize="9" fontWeight="600" fill={c.muted} textAnchor="middle">LESSONS</text>
       </g>
 
-      <g transform="translate(340, 24)">
-        <rect width="48" height="24" rx="12" fill={`url(#card-grad-${theme})`}/>
-        <text x="24" y="16" fontFamily="system-ui, -apple-system, sans-serif" fontSize="10" fontWeight="700" fill="white" textAnchor="middle">LVL {level}</text>
+      <g transform="translate(305, 125)">
+        <rect width="75" height="55" rx="10" fill={c.statBg}/>
+        <text x="37.5" y="25" fontFamily="system-ui, -apple-system, sans-serif" fontSize="18" fontWeight="700" fill={c.accent} textAnchor="middle">{courses}</text>
+        <text x="37.5" y="42" fontFamily="system-ui, -apple-system, sans-serif" fontSize="9" fontWeight="600" fill={c.muted} textAnchor="middle">COURSES</text>
       </g>
     </svg>
   )
@@ -117,7 +125,7 @@ export function getcardsvgstring({ username = 'Learner', level = '1', xp = '0', 
   const c = colors[theme] || colors.light
   const uid = `card-${theme}-${Date.now()}`
 
-  return `<svg xmlns="http://www.w3.org/2000/svg" width="400" height="140" viewBox="0 0 400 140">
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="400" height="200" viewBox="0 0 400 200">
     <defs>
       <linearGradient id="grad-${uid}" x1="0%" y1="0%" x2="100%" y2="100%">
         <stop offset="0%" stop-color="${c.accent}"/>
@@ -129,50 +137,58 @@ export function getcardsvgstring({ username = 'Learner', level = '1', xp = '0', 
       </linearGradient>
     </defs>
 
-    <rect width="400" height="140" rx="12" fill="url(#bg-${uid})" stroke="${c.line}" stroke-width="1"/>
+    <rect width="400" height="200" rx="12" fill="url(#bg-${uid})" stroke="${c.line}" stroke-width="1"/>
 
-    <g opacity="0.08">
-      <line x1="320" y1="20" x2="350" y2="35" stroke="${c.accent}" stroke-width="1.5"/>
-      <line x1="350" y1="35" x2="380" y2="25" stroke="${c.accent}" stroke-width="1.5"/>
-      <line x1="350" y1="35" x2="370" y2="55" stroke="${c.accent}" stroke-width="1.5"/>
-      <circle cx="320" cy="20" r="4" fill="${c.accent}"/>
-      <circle cx="350" cy="35" r="5" fill="${c.accent}"/>
-      <circle cx="380" cy="25" r="3" fill="${c.accent}"/>
-      <circle cx="370" cy="55" r="3" fill="${c.accent}"/>
+    <g opacity="0.15">
+      <line x1="300" y1="30" x2="330" y2="50" stroke="${c.accent}" stroke-width="1.5"/>
+      <line x1="330" y1="50" x2="360" y2="35" stroke="${c.accent}" stroke-width="1.5"/>
+      <line x1="330" y1="50" x2="350" y2="75" stroke="${c.accent}" stroke-width="1.5"/>
+      <line x1="360" y1="35" x2="380" y2="55" stroke="${c.accent}" stroke-width="1.5"/>
+      <circle cx="300" cy="30" r="4" fill="${c.accent}"/>
+      <circle cx="330" cy="50" r="5" fill="${c.accent}"/>
+      <circle cx="360" cy="35" r="4" fill="${c.accent}"/>
+      <circle cx="350" cy="75" r="3" fill="${c.accent}"/>
+      <circle cx="380" cy="55" r="3" fill="${c.accent}"/>
     </g>
 
-    <rect x="16" y="16" width="4" height="40" rx="2" fill="url(#grad-${uid})"/>
-
-    <text x="32" y="36" font-family="system-ui, -apple-system, sans-serif" font-size="18" font-weight="700" fill="${c.text}">${username}</text>
-    <text x="32" y="52" font-family="system-ui, -apple-system, sans-serif" font-size="11" fill="${c.muted}">Neuron ML Learning</text>
-
-    <g transform="translate(16, 75)">
-      <rect width="88" height="48" rx="8" fill="${c.statBg}"/>
-      <text x="44" y="20" font-family="system-ui, -apple-system, sans-serif" font-size="16" font-weight="700" fill="${c.accent}" text-anchor="middle">${xp}</text>
-      <text x="44" y="36" font-family="system-ui, -apple-system, sans-serif" font-size="9" font-weight="500" fill="${c.muted}" text-anchor="middle">XP EARNED</text>
+    <circle cx="50" cy="55" r="30" fill="url(#grad-${uid})"/>
+    <g transform="translate(50, 55)">
+      <circle cx="-8" cy="-8" r="4" fill="white" opacity="0.9"/>
+      <circle cx="8" cy="-8" r="4" fill="white" opacity="0.9"/>
+      <circle cx="0" cy="8" r="4" fill="white" opacity="0.9"/>
+      <line x1="-8" y1="-8" x2="8" y2="-8" stroke="white" stroke-width="1.5" opacity="0.7"/>
+      <line x1="-8" y1="-8" x2="0" y2="8" stroke="white" stroke-width="1.5" opacity="0.7"/>
+      <line x1="8" y1="-8" x2="0" y2="8" stroke="white" stroke-width="1.5" opacity="0.7"/>
     </g>
 
-    <g transform="translate(112, 75)">
-      <rect width="88" height="48" rx="8" fill="${c.statBg}"/>
-      <text x="44" y="20" font-family="system-ui, -apple-system, sans-serif" font-size="16" font-weight="700" fill="${c.accent}" text-anchor="middle">${streak}</text>
-      <text x="44" y="36" font-family="system-ui, -apple-system, sans-serif" font-size="9" font-weight="500" fill="${c.muted}" text-anchor="middle">DAY STREAK</text>
+    <text x="95" y="45" font-family="system-ui, -apple-system, sans-serif" font-size="18" font-weight="700" fill="${c.text}">${username}</text>
+    <text x="95" y="65" font-family="system-ui, -apple-system, sans-serif" font-size="12" fill="${c.muted}">Neuron ML Learning</text>
+    <text x="95" y="82" font-family="system-ui, -apple-system, sans-serif" font-size="11" font-weight="600" fill="${c.accent}">Level ${level}</text>
+
+    <line x1="20" y1="110" x2="380" y2="110" stroke="${c.line}" stroke-width="1" stroke-dasharray="4 4"/>
+
+    <g transform="translate(20, 125)">
+      <rect width="85" height="55" rx="10" fill="${c.statBg}"/>
+      <text x="42.5" y="25" font-family="system-ui, -apple-system, sans-serif" font-size="18" font-weight="700" fill="${c.accent}" text-anchor="middle">${xp}</text>
+      <text x="42.5" y="42" font-family="system-ui, -apple-system, sans-serif" font-size="9" font-weight="600" fill="${c.muted}" text-anchor="middle">TOTAL XP</text>
     </g>
 
-    <g transform="translate(208, 75)">
-      <rect width="88" height="48" rx="8" fill="${c.statBg}"/>
-      <text x="44" y="20" font-family="system-ui, -apple-system, sans-serif" font-size="16" font-weight="700" fill="${c.accent}" text-anchor="middle">${lessons}</text>
-      <text x="44" y="36" font-family="system-ui, -apple-system, sans-serif" font-size="9" font-weight="500" fill="${c.muted}" text-anchor="middle">LESSONS</text>
+    <g transform="translate(115, 125)">
+      <rect width="85" height="55" rx="10" fill="${c.statBg}"/>
+      <text x="42.5" y="25" font-family="system-ui, -apple-system, sans-serif" font-size="18" font-weight="700" fill="${c.accent}" text-anchor="middle">${streak}</text>
+      <text x="42.5" y="42" font-family="system-ui, -apple-system, sans-serif" font-size="9" font-weight="600" fill="${c.muted}" text-anchor="middle">DAY STREAK</text>
     </g>
 
-    <g transform="translate(304, 75)">
-      <rect width="80" height="48" rx="8" fill="${c.statBg}"/>
-      <text x="40" y="20" font-family="system-ui, -apple-system, sans-serif" font-size="16" font-weight="700" fill="${c.accent}" text-anchor="middle">${courses}</text>
-      <text x="40" y="36" font-family="system-ui, -apple-system, sans-serif" font-size="9" font-weight="500" fill="${c.muted}" text-anchor="middle">COURSES</text>
+    <g transform="translate(210, 125)">
+      <rect width="85" height="55" rx="10" fill="${c.statBg}"/>
+      <text x="42.5" y="25" font-family="system-ui, -apple-system, sans-serif" font-size="18" font-weight="700" fill="${c.accent}" text-anchor="middle">${lessons}</text>
+      <text x="42.5" y="42" font-family="system-ui, -apple-system, sans-serif" font-size="9" font-weight="600" fill="${c.muted}" text-anchor="middle">LESSONS</text>
     </g>
 
-    <g transform="translate(340, 24)">
-      <rect width="48" height="24" rx="12" fill="url(#grad-${uid})"/>
-      <text x="24" y="16" font-family="system-ui, -apple-system, sans-serif" font-size="10" font-weight="700" fill="white" text-anchor="middle">LVL ${level}</text>
+    <g transform="translate(305, 125)">
+      <rect width="75" height="55" rx="10" fill="${c.statBg}"/>
+      <text x="37.5" y="25" font-family="system-ui, -apple-system, sans-serif" font-size="18" font-weight="700" fill="${c.accent}" text-anchor="middle">${courses}</text>
+      <text x="37.5" y="42" font-family="system-ui, -apple-system, sans-serif" font-size="9" font-weight="600" fill="${c.muted}" text-anchor="middle">COURSES</text>
     </g>
   </svg>`
 }
