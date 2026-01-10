@@ -227,7 +227,7 @@ app.post('/api/github/create-repo', async (req, res) => {
 
     res.json({
       success: true,
-      repourl: repodata.html_url,
+      url: repodata.html_url,
       fullname: repodata.full_name
     })
   } catch (err) {

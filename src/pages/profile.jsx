@@ -7,6 +7,7 @@ import { learningpaths } from '../data/learningpaths'
 import { Link } from 'react-router-dom'
 import Certificate from '../components/certificate/certificate'
 import Avatarupload from '../components/profile/avatarupload'
+import Publishmodal from '../components/github/publishmodal'
 import { getcardurl, getbadgeurl, generatecardmarkdown, generatebadgemarkdown } from '../services/github'
 
 const achievementicons = {
@@ -91,6 +92,7 @@ export default function profile() {
   const [showcertificate, setshowcertificate] = useState(false)
   const [copied, setcopied] = useState(null)
   const [cardtheme, setcardtheme] = useState('light')
+  const [publishcourse, setpublishcourse] = useState(null)
 
   const unlockedachievements = getunlockedachievements()
   const nextlevel = getnextlevel(stats.level)
@@ -551,12 +553,15 @@ export default function profile() {
                         <h4 className="font-medium text-slate-900">{course.title}</h4>
                         <p className="text-sm text-slate-500">{course.total} lessons completed</p>
                       </div>
-                      <Link
-                        to={`/course/${course.id}`}
-                        className="px-4 py-2 bg-emerald-600 text-white rounded-lg text-sm font-medium hover:bg-emerald-700 transition-colors"
+                      <button
+                        onClick={() => setpublishcourse(course)}
+                        className="px-4 py-2 bg-emerald-600 text-white rounded-lg text-sm font-medium hover:bg-emerald-700 transition-colors flex items-center gap-2"
                       >
-                        View Project
-                      </Link>
+                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                        </svg>
+                        Publish
+                      </button>
                     </div>
                   ))}
                 </div>
@@ -613,6 +618,10 @@ export default function profile() {
           totalhours={totalhours}
           onclose={() => setshowcertificate(false)}
         />
+      )}
+
+      {publishcourse && (
+        <Publishmodal course={publishcourse} onclose={() => setpublishcourse(null)} />
       )}
     </div>
   )

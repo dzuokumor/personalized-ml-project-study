@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react'
 import { getcoursebyid } from '../data/courses'
 import { usestore } from '../store/usestore'
 import { useauth } from '../contexts/authcontext'
+import { usestats } from '../hooks/usestats'
 import LessonContent from '../components/course/lessoncontent'
 import Quiz from '../components/course/quiz'
 import Codeexecutor from '../components/course/codeexecutor'
@@ -16,9 +17,11 @@ export default function lesson() {
   const [showlogin, setshowlogin] = useState(false)
 
   const { user, loading } = useauth()
+  const { completelesson, passquiz, completecourse } = usestats()
 
   const markcomplete = usestore((state) => state.markcomplete)
   const islessonComplete = usestore((state) => state.islessonComplete)
+  const progress = usestore((state) => state.progress)
   const isbookmarked = usestore((state) => state.isbookmarked)
   const addbookmark = usestore((state) => state.addbookmark)
   const removebookmark = usestore((state) => state.removebookmark)
@@ -84,8 +87,21 @@ export default function lesson() {
   const iscomplete = islessonComplete(courseid, lessonid)
   const bookmarked = isbookmarked(courseid, lessonid)
 
+  const checkcoursecompletion = () => {
+    if (!course) return
+    const courseprogress = progress[courseid] || {}
+    const completedcount = Object.values(courseprogress).filter(Boolean).length + 1
+    if (completedcount >= course.lessons.length) {
+      completecourse(courseid)
+    }
+  }
+
   const handlemarkcomplete = () => {
-    markcomplete(courseid, lessonid)
+    if (!islessonComplete(courseid, lessonid)) {
+      markcomplete(courseid, lessonid)
+      completelesson(courseid, lessonid)
+      checkcoursecompletion()
+    }
     if (nextlesson) {
       navigate(`/course/${courseid}/lesson/${nextlesson.id}`)
     }
@@ -93,7 +109,14 @@ export default function lesson() {
 
   const handlequizcomplete = (score) => {
     savequizscore(courseid, lessonid, score, lesson.quiz.length)
-    markcomplete(courseid, lessonid)
+    if (!islessonComplete(courseid, lessonid)) {
+      markcomplete(courseid, lessonid)
+      completelesson(courseid, lessonid)
+      checkcoursecompletion()
+    }
+    if (score >= Math.ceil(lesson.quiz.length * 0.7)) {
+      passquiz(score, lesson.quiz.length)
+    }
   }
 
   const handlebookmark = () => {

@@ -1,5 +1,6 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
+import { syncservice } from '../lib/sync'
 
 const generatecode = () => {
   const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'
@@ -20,6 +21,36 @@ export const usestore = create(
       theme: 'light',
       synccode: null,
       showsyncmodal: false,
+      userid: null,
+      synced: false,
+
+      setuserid: (userid) => {
+        set({ userid })
+      },
+
+      loadfromcloud: async (userid) => {
+        if (!userid) return
+        set({ userid })
+        const data = await syncservice.loadall(userid)
+        if (data.progress) {
+          set((state) => ({
+            progress: { ...state.progress, ...data.progress },
+            synced: true
+          }))
+        }
+        if (data.bookmarks) {
+          set((state) => {
+            const merged = [...new Set([...state.bookmarks, ...data.bookmarks])]
+            return { bookmarks: merged }
+          })
+        }
+        if (data.notes) {
+          set((state) => ({ notes: { ...state.notes, ...data.notes } }))
+        }
+        if (data.quizscores) {
+          set((state) => ({ quizscores: { ...state.quizscores, ...data.quizscores } }))
+        }
+      },
 
       initializesynccode: () => {
         const state = get()
@@ -29,6 +60,7 @@ export const usestore = create(
       },
 
       markcomplete: (courseid, lessonid) => {
+        const { userid } = get()
         set((state) => ({
           progress: {
             ...state.progress,
@@ -38,6 +70,9 @@ export const usestore = create(
             }
           }
         }))
+        if (userid) {
+          syncservice.saveprogress(userid, courseid, lessonid)
+        }
       },
 
       getcourseprogress: (courseid, totallessons) => {
@@ -53,17 +88,25 @@ export const usestore = create(
       },
 
       addbookmark: (courseid, lessonid) => {
+        const { userid } = get()
         set((state) => {
           const key = `${courseid}:${lessonid}`
           if (state.bookmarks.includes(key)) return state
           return { bookmarks: [...state.bookmarks, key] }
         })
+        if (userid) {
+          syncservice.addbookmark(userid, courseid, lessonid)
+        }
       },
 
       removebookmark: (courseid, lessonid) => {
+        const { userid } = get()
         set((state) => ({
           bookmarks: state.bookmarks.filter(b => b !== `${courseid}:${lessonid}`)
         }))
+        if (userid) {
+          syncservice.removebookmark(userid, courseid, lessonid)
+        }
       },
 
       isbookmarked: (courseid, lessonid) => {
@@ -72,12 +115,16 @@ export const usestore = create(
       },
 
       savenote: (courseid, lessonid, note) => {
+        const { userid } = get()
         set((state) => ({
           notes: {
             ...state.notes,
             [`${courseid}:${lessonid}`]: note
           }
         }))
+        if (userid) {
+          syncservice.savenote(userid, courseid, lessonid, note)
+        }
       },
 
       getnote: (courseid, lessonid) => {
@@ -86,12 +133,16 @@ export const usestore = create(
       },
 
       savequizscore: (courseid, lessonid, score, total) => {
+        const { userid } = get()
         set((state) => ({
           quizscores: {
             ...state.quizscores,
             [`${courseid}:${lessonid}`]: { score, total, date: Date.now() }
           }
         }))
+        if (userid) {
+          syncservice.savequizscore(userid, courseid, lessonid, score, total)
+        }
       },
 
       getquizscore: (courseid, lessonid) => {

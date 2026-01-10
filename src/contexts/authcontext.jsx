@@ -15,7 +15,7 @@ export const Authprovider = ({ children }) => {
   const [user, setuser] = useState(null)
   const [loading, setloading] = useState(true)
   const [avatar, setavatar] = useState(null)
-  const [githubtoken, setgithubtoken] = useState(null)
+  const [githubtoken, setgithubtoken] = useState(() => localStorage.getItem('github_token'))
   const [githubconnected, setgithubconnected] = useState(false)
 
   useEffect(() => {
@@ -23,6 +23,7 @@ export const Authprovider = ({ children }) => {
       setuser(session?.user ?? null)
       setavatar(session?.user?.user_metadata?.custom_avatar_url ?? session?.user?.user_metadata?.avatar_url ?? null)
       if (session?.provider_token && session?.user?.app_metadata?.provider === 'github') {
+        localStorage.setItem('github_token', session.provider_token)
         setgithubtoken(session.provider_token)
         setgithubconnected(true)
       }
@@ -35,6 +36,10 @@ export const Authprovider = ({ children }) => {
       const isgithubuser = session?.user?.app_metadata?.provider === 'github' ||
                           session?.user?.identities?.some(i => i.provider === 'github')
       setgithubconnected(isgithubuser)
+      const storedtoken = localStorage.getItem('github_token')
+      if (storedtoken) {
+        setgithubtoken(storedtoken)
+      }
       setloading(false)
     })
 

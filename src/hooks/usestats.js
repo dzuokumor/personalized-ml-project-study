@@ -1,6 +1,6 @@
-import { useState, useEffect, useCallback } from 'react'
-import { supabase } from '../lib/supabase'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import { useauth } from '../contexts/authcontext'
+import { syncservice } from '../lib/sync'
 
 const xpvalues = {
   lessoncomplete: 10,
@@ -62,6 +62,7 @@ export function usestats() {
     totalTimeSpent: 0
   })
   const [loading, setloading] = useState(true)
+  const syncedref = useRef(false)
 
   const getlevel = (xp) => {
     let current = levels[0]
@@ -78,22 +79,49 @@ export function usestats() {
   }
 
   useEffect(() => {
-    const loadstats = () => {
+    const loadstats = async () => {
       const saved = localStorage.getItem('ml-user-stats')
+      let localstats = null
       if (saved) {
         try {
-          const parsed = JSON.parse(saved)
-          const level = getlevel(parsed.xp || 0)
-          setstats({ ...parsed, level: level.level, title: level.title })
-        } catch (e) {
-          setstats(prev => prev)
+          localstats = JSON.parse(saved)
+        } catch (e) {}
+      }
+
+      if (user && !syncedref.current) {
+        syncedref.current = true
+        const cloudstats = await syncservice.loadstats(user.id)
+        if (cloudstats) {
+          const merged = {
+            xp: Math.max(localstats?.xp || 0, cloudstats.xp || 0),
+            lessonsCompleted: Math.max(localstats?.lessonsCompleted || 0, cloudstats.lessonsCompleted || 0),
+            quizzesPassed: Math.max(localstats?.quizzesPassed || 0, cloudstats.quizzesPassed || 0),
+            perfectQuizzes: Math.max(localstats?.perfectQuizzes || 0, cloudstats.perfectQuizzes || 0),
+            currentStreak: Math.max(localstats?.currentStreak || 0, cloudstats.currentStreak || 0),
+            longestStreak: Math.max(localstats?.longestStreak || 0, cloudstats.longestStreak || 0),
+            lastActivityDate: localstats?.lastActivityDate || cloudstats.lastActivityDate,
+            coursesCompleted: Math.max(localstats?.coursesCompleted || 0, cloudstats.coursesCompleted || 0),
+            completedCourses: [...new Set([...(localstats?.completedCourses || []), ...(cloudstats.completedCourses || [])])],
+            pathsCompleted: Math.max(localstats?.pathsCompleted || 0, cloudstats.pathsCompleted || 0),
+            unlockedAchievements: [...new Set([...(localstats?.unlockedAchievements || []), ...(cloudstats.achievements || [])])]
+          }
+          const level = getlevel(merged.xp)
+          const finalstats = { ...merged, level: level.level, title: level.title }
+          setstats(finalstats)
+          localStorage.setItem('ml-user-stats', JSON.stringify(finalstats))
+          setloading(false)
+          return
         }
+      }
+
+      if (localstats) {
+        const level = getlevel(localstats.xp || 0)
+        setstats({ ...localstats, level: level.level, title: level.title })
       }
       setloading(false)
     }
 
     loadstats()
-    checkstreak()
   }, [user])
 
   const savestats = useCallback((newstats) => {
@@ -101,8 +129,11 @@ export function usestats() {
     const updated = { ...newstats, level: level.level, title: level.title }
     setstats(updated)
     localStorage.setItem('ml-user-stats', JSON.stringify(updated))
+    if (user) {
+      syncservice.savestats(user.id, updated)
+    }
     return updated
-  }, [])
+  }, [user])
 
   const checkstreak = useCallback(() => {
     const today = new Date().toDateString()
