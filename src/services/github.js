@@ -29,7 +29,7 @@ export const createrepo = async ({ token, reponame, description, code, readme, i
 export const generateprojectreadme = ({ coursename, lessonname, description, code }) => {
   return `# ${lessonname}
 
-> From the **${coursename}** course on [Neuron ML Learning Platform](https://neuron-ml.vercel.app)
+> From the **${coursename}** course on [Neuron ML Learning Platform](https://personalized-ml-project-study.vercel.app)
 
 ## Overview
 
@@ -47,7 +47,7 @@ This project was completed as part of the Neuron ML curriculum, demonstrating pr
 
 ---
 
-*Built with [Neuron](https://neuron-ml.vercel.app) - Learn ML by building real projects*
+*Built with [Neuron](https://personalized-ml-project-study.vercel.app) - Learn ML by building real projects*
 `
 }
 
@@ -74,5 +74,5 @@ export const generatebadgemarkdown = (type, value, theme = 'light') => {
 
 export const generatecardmarkdown = (props) => {
   const url = getcardurl(props)
-  return `[![Neuron ML Stats](${url})](https://neuron-ml.vercel.app)`
+  return `[![Neuron ML Stats](${url})](https://personalized-ml-project-study.vercel.app)`
 }

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useauth } from '../contexts/authcontext'
 import { usestats } from '../hooks/usestats'
+import { useprogress } from '../hooks/useprogress'
 import { usestore } from '../store/usestore'
 import { allcourses, curriculumcourses } from '../data/courses'
 import { learningpaths } from '../data/learningpaths'
@@ -88,7 +89,8 @@ const achievementicons = {
 export default function profile() {
   const { user, signout, avatar, githubconnected, connectgithubforrepos } = useauth()
   const { stats, levels, achievements, getunlockedachievements, getnextlevel, repairstats } = usestats()
-  const progress = usestore((state) => state.progress)
+  const { progress, syncfrommlocal } = useprogress()
+  const storeprogress = usestore((state) => state.progress)
   const quizscores = usestore((state) => state.quizscores)
   const [activeTab, setactiveTab] = useState('overview')
   const [showcertificate, setshowcertificate] = useState(false)
@@ -97,10 +99,11 @@ export default function profile() {
   const [publishcourse, setpublishcourse] = useState(null)
 
   useEffect(() => {
-    if (Object.keys(progress).length > 0 || Object.keys(quizscores).length > 0) {
-      repairstats(progress, quizscores)
+    if (Object.keys(storeprogress).length > 0 || Object.keys(quizscores).length > 0) {
+      repairstats(storeprogress, quizscores)
+      syncfrommlocal(storeprogress)
     }
-  }, [progress, quizscores, repairstats])
+  }, [storeprogress, quizscores, repairstats, syncfrommlocal])
 
   const unlockedachievements = getunlockedachievements()
   const nextlevel = getnextlevel(stats.level)

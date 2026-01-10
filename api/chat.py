@@ -40,7 +40,7 @@ Be encouraging but accurate. If you don't know something, say so."""
                 headers={
                     'Content-Type': 'application/json',
                     'Authorization': f'Bearer {api_key}',
-                    'HTTP-Referer': 'https://ml-study.vercel.app',
+                    'HTTP-Referer': 'https://personalized-ml-project-study.vercel.app',
                     'X-Title': 'ML Study Platform'
                 }
             )

@@ -89,12 +89,50 @@ export function useprogress() {
     return Math.round((completed / totallessons) * 100)
   }, [progress])
 
+  const syncfrommlocal = useCallback(async (localprogress) => {
+    if (!user || !localprogress) return
+
+    const updates = []
+    Object.keys(localprogress).forEach(courseid => {
+      const courseprogress = localprogress[courseid]
+      if (courseprogress && typeof courseprogress === 'object') {
+        Object.keys(courseprogress).forEach(lessonid => {
+          if (courseprogress[lessonid] && !progress[courseid]?.[lessonid]) {
+            updates.push({ courseid, lessonid })
+          }
+        })
+      }
+    })
+
+    if (updates.length === 0) return
+
+    for (const { courseid, lessonid } of updates) {
+      await supabase
+        .from('user_progress')
+        .upsert({
+          user_id: user.id,
+          course_id: courseid,
+          lesson_id: lessonid,
+          completed: true,
+          completed_at: new Date().toISOString()
+        }, { onConflict: 'user_id,course_id,lesson_id' })
+    }
+
+    const newprogress = { ...progress }
+    updates.forEach(({ courseid, lessonid }) => {
+      if (!newprogress[courseid]) newprogress[courseid] = {}
+      newprogress[courseid][lessonid] = true
+    })
+    setprogress(newprogress)
+  }, [user, progress])
+
   return {
     progress,
     loading,
     markcomplete,
     iscomplete,
-    getcourseprogress
+    getcourseprogress,
+    syncfrommlocal
   }
 }
 
