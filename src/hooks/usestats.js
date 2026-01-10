@@ -45,7 +45,7 @@ const achievements = [
 
 export function usestats() {
   const { user } = useauth()
-  const [stats, setstats] = useState({
+  const defaultstats = {
     xp: 0,
     level: 1,
     title: 'Novice',
@@ -60,9 +60,11 @@ export function usestats() {
     completedCourses: [],
     unlockedAchievements: [],
     totalTimeSpent: 0
-  })
+  }
+  const [stats, setstats] = useState(defaultstats)
   const [loading, setloading] = useState(true)
   const syncedref = useRef(false)
+  const statsref = useRef(defaultstats)
 
   const getlevel = (xp) => {
     let current = levels[0]
@@ -107,6 +109,7 @@ export function usestats() {
           }
           const level = getlevel(merged.xp)
           const finalstats = { ...merged, level: level.level, title: level.title }
+          statsref.current = finalstats
           setstats(finalstats)
           localStorage.setItem('ml-user-stats', JSON.stringify(finalstats))
           setloading(false)
@@ -116,7 +119,9 @@ export function usestats() {
 
       if (localstats) {
         const level = getlevel(localstats.xp || 0)
-        setstats({ ...localstats, level: level.level, title: level.title })
+        const finalstats = { ...localstats, level: level.level, title: level.title }
+        statsref.current = finalstats
+        setstats(finalstats)
       }
       setloading(false)
     }
@@ -127,6 +132,7 @@ export function usestats() {
   const savestats = useCallback((newstats) => {
     const level = getlevel(newstats.xp)
     const updated = { ...newstats, level: level.level, title: level.title }
+    statsref.current = updated
     setstats(updated)
     localStorage.setItem('ml-user-stats', JSON.stringify(updated))
     if (user) {
@@ -154,31 +160,32 @@ export function usestats() {
 
   const recordactivity = useCallback(() => {
     const today = new Date().toDateString()
-    const lastactivity = stats.lastActivityDate
+    const current = statsref.current
+    const lastactivity = current.lastActivityDate
 
-    let newstreak = stats.currentStreak
+    let newstreak = current.currentStreak
 
     if (!lastactivity || new Date(lastactivity).toDateString() !== today) {
       const yesterday = new Date()
       yesterday.setDate(yesterday.getDate() - 1)
 
       if (lastactivity && new Date(lastactivity).toDateString() === yesterday.toDateString()) {
-        newstreak = stats.currentStreak + 1
+        newstreak = current.currentStreak + 1
       } else if (!lastactivity || new Date(lastactivity).toDateString() !== today) {
         newstreak = 1
       }
     }
 
     const newstats = {
-      ...stats,
+      ...current,
       currentStreak: newstreak,
-      longestStreak: Math.max(stats.longestStreak, newstreak),
+      longestStreak: Math.max(current.longestStreak, newstreak),
       lastActivityDate: today,
-      xp: stats.xp + (newstreak > stats.currentStreak ? xpvalues.streakday : 0)
+      xp: current.xp + (newstreak > current.currentStreak ? xpvalues.streakday : 0)
     }
 
     return savestats(newstats)
-  }, [stats, savestats])
+  }, [savestats])
 
   const addxp = useCallback((amount, reason) => {
     const updated = recordactivity()
