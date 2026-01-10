@@ -111,7 +111,7 @@ export const syncservice = {
   async loadquizscores(userid) {
     const { data, error } = await supabase
       .from('quiz_scores')
-      .select('course_id, lesson_id, score, total, completed_at')
+      .select('course_id, lesson_id, score, total, created_at')
       .eq('user_id', userid)
 
     if (error) {
@@ -122,8 +122,8 @@ export const syncservice = {
     const scores = {}
     data?.forEach(row => {
       const key = `${row.course_id}:${row.lesson_id}`
-      if (!scores[key] || new Date(row.completed_at) > new Date(scores[key].date)) {
-        scores[key] = { score: row.score, total: row.total, date: new Date(row.completed_at).getTime() }
+      if (!scores[key] || new Date(row.created_at) > new Date(scores[key].date)) {
+        scores[key] = { score: row.score, total: row.total, date: new Date(row.created_at).getTime() }
       }
     })
     return scores
@@ -149,14 +149,17 @@ export const syncservice = {
       .from('user_stats')
       .select('*')
       .eq('user_id', userid)
-      .single()
+      .maybeSingle()
 
-    if (error && error.code !== 'PGRST116') {
+    if (error) {
       console.error('Failed to load stats:', error)
       return null
     }
 
-    if (!data) return null
+    if (!data) {
+      await supabase.from('user_stats').insert({ user_id: userid })
+      return null
+    }
 
     return {
       xp: data.xp || 0,
@@ -168,8 +171,8 @@ export const syncservice = {
       longestStreak: data.longest_streak || 0,
       lastActivityDate: data.last_activity_date,
       achievements: data.achievements || [],
-      coursesCompleted: (data.achievements || []).filter(a => a.startsWith('course:')).length,
-      completedCourses: (data.achievements || []).filter(a => a.startsWith('course:')).map(a => a.replace('course:', '')),
+      coursesCompleted: (data.achievements || []).filter(a => a && a.startsWith && a.startsWith('course:')).length,
+      completedCourses: (data.achievements || []).filter(a => a && a.startsWith && a.startsWith('course:')).map(a => a.replace('course:', '')),
       pathsCompleted: 0
     }
   },

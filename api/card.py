@@ -1,26 +1,27 @@
-from flask import Flask, Response, request
+from http.server import BaseHTTPRequestHandler
+from urllib.parse import urlparse, parse_qs
 
-app = Flask(__name__)
+class handler(BaseHTTPRequestHandler):
+    def do_GET(self):
+        parsed = urlparse(self.path)
+        params = parse_qs(parsed.query)
 
-@app.route('/', defaults={'path': ''})
-@app.route('/<path:path>')
-def card(path):
-    username = request.args.get('username', 'Learner')
-    theme = request.args.get('theme', 'light')
-    level = request.args.get('level', '1')
-    xp = request.args.get('xp', '0')
-    streak = request.args.get('streak', '0')
-    lessons = request.args.get('lessons', '0')
-    courses = request.args.get('courses', '0')
+        username = params.get('username', ['Learner'])[0]
+        theme = params.get('theme', ['light'])[0]
+        level = params.get('level', ['1'])[0]
+        xp = params.get('xp', ['0'])[0]
+        streak = params.get('streak', ['0'])[0]
+        lessons = params.get('lessons', ['0'])[0]
+        courses = params.get('courses', ['0'])[0]
 
-    colors = {
-        'light': {'bg': '#ffffff', 'card': '#f8fafc', 'text': '#1e293b', 'muted': '#64748b', 'accent': '#10b981', 'border': '#e2e8f0'},
-        'dark': {'bg': '#0f172a', 'card': '#1e293b', 'text': '#f8fafc', 'muted': '#94a3b8', 'accent': '#10b981', 'border': '#334155'}
-    }
+        colors = {
+            'light': {'bg': '#ffffff', 'card': '#f8fafc', 'text': '#1e293b', 'muted': '#64748b', 'accent': '#10b981', 'border': '#e2e8f0'},
+            'dark': {'bg': '#0f172a', 'card': '#1e293b', 'text': '#f8fafc', 'muted': '#94a3b8', 'accent': '#10b981', 'border': '#334155'}
+        }
 
-    c = colors.get(theme, colors['light'])
+        c = colors.get(theme, colors['light'])
 
-    svg = f'''<svg xmlns="http://www.w3.org/2000/svg" width="400" height="180" viewBox="0 0 400 180">
+        svg = f'''<svg xmlns="http://www.w3.org/2000/svg" width="400" height="180" viewBox="0 0 400 180">
     <defs>
         <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
             <stop offset="0%" style="stop-color:{c['accent']};stop-opacity:0.1"/>
@@ -63,7 +64,16 @@ def card(path):
     </g>
 </svg>'''
 
-    return Response(svg, mimetype='image/svg+xml', headers={
-        'Cache-Control': 'public, max-age=300',
-        'Access-Control-Allow-Origin': '*'
-    })
+        self.send_response(200)
+        self.send_header('Content-Type', 'image/svg+xml')
+        self.send_header('Cache-Control', 'public, max-age=300')
+        self.send_header('Access-Control-Allow-Origin', '*')
+        self.end_headers()
+        self.wfile.write(svg.encode('utf-8'))
+
+    def do_OPTIONS(self):
+        self.send_response(200)
+        self.send_header('Access-Control-Allow-Origin', '*')
+        self.send_header('Access-Control-Allow-Methods', 'GET, OPTIONS')
+        self.send_header('Access-Control-Allow-Headers', 'Content-Type')
+        self.end_headers()
