@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { getcoursebyid } from '../data/courses'
 import { useprogress } from '../hooks/useprogress'
+import { usestore } from '../store/usestore'
 import { useauth } from '../contexts/authcontext'
 import ProgressBar from '../components/course/progressbar'
 import Login from '../components/auth/login'
@@ -10,7 +11,9 @@ import Publishmodal from '../components/github/publishmodal'
 export default function course() {
   const { courseid } = useParams()
   const coursedata = getcoursebyid(courseid)
-  const { progress, getcourseprogress } = useprogress()
+  const { progress: supabaseprogress, getcourseprogress } = useprogress()
+  const storeprogress = usestore((state) => state.progress)
+  const storegetcourseprogress = usestore((state) => state.getcourseprogress)
   const { user, loading, connectgithubforrepos } = useauth()
   const [showlogin, setshowlogin] = useState(false)
   const [showpublish, setshowpublish] = useState(false)
@@ -83,8 +86,12 @@ export default function course() {
     )
   }
 
-  const courseprogress = progress[courseid] || {}
-  const overallprogress = getcourseprogress(courseid, coursedata.lessons.length)
+  const supabasecourseprogress = supabaseprogress[courseid] || {}
+  const storecourseprogress = storeprogress[courseid] || {}
+  const courseprogress = { ...supabasecourseprogress, ...storecourseprogress }
+  const supabaseoverall = getcourseprogress(courseid, coursedata.lessons.length)
+  const storeoverall = storegetcourseprogress(courseid, coursedata.lessons.length)
+  const overallprogress = Math.max(supabaseoverall, storeoverall)
 
   return (
     <div>
