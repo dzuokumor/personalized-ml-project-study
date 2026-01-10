@@ -1,3 +1,6 @@
+import { getbadgedataurl } from '../components/profile/statsbadge'
+import { getcarddataurl } from '../components/profile/statscard'
+
 const apiurl = import.meta.env.PROD ? '' : 'http://localhost:3001'
 
 export const createrepo = async ({ token, reponame, description, code, readme, isprivate }) => {
@@ -49,22 +52,11 @@ This project was completed as part of the Neuron ML curriculum, demonstrating pr
 }
 
 export const getbadgeurl = (type, value, theme = 'light') => {
-  const baseurl = import.meta.env.PROD
-    ? 'https://neuron-ml.vercel.app'
-    : 'http://localhost:3001'
-  const params = new URLSearchParams({
-    type,
-    value: String(value),
-    theme
-  })
-  return `${baseurl}/api/badge?${params}`
+  return getbadgedataurl(type, String(value), theme)
 }
 
 export const getcardurl = ({ username, level, xp, streak, lessons, courses, theme = 'light' }) => {
-  const baseurl = import.meta.env.PROD
-    ? 'https://neuron-ml.vercel.app'
-    : 'http://localhost:3001'
-  const params = new URLSearchParams({
+  return getcarddataurl({
     username: username || 'Learner',
     level: level || '1',
     xp: xp || '0',
@@ -73,7 +65,6 @@ export const getcardurl = ({ username, level, xp, streak, lessons, courses, them
     courses: courses || '0',
     theme
   })
-  return `${baseurl}/api/card?${params}`
 }
 
 export const generatebadgemarkdown = (type, value, theme = 'light') => {
