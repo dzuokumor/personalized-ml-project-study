@@ -8,7 +8,9 @@ import { Link } from 'react-router-dom'
 import Certificate from '../components/certificate/certificate'
 import Avatarupload from '../components/profile/avatarupload'
 import Publishmodal from '../components/github/publishmodal'
-import { getcardurl, getbadgeurl, generatecardmarkdown, generatebadgemarkdown } from '../services/github'
+import { generatecardmarkdown, generatebadgemarkdown } from '../services/github'
+import Statsbadge from '../components/profile/statsbadge'
+import Statscard from '../components/profile/statscard'
 
 const achievementicons = {
   star: (
@@ -448,81 +450,122 @@ export default function profile() {
               </div>
             </div>
             <p className="text-sm text-slate-500 mb-4">Add this card to your GitHub profile README to showcase your ML learning progress</p>
-            <div className={`rounded-xl p-4 mb-4 ${cardtheme === 'dark' ? 'bg-slate-900' : 'bg-slate-50'}`}>
-              <img src={getcardurl(cardprops)} alt="Neuron Profile Card" className="w-full max-w-md mx-auto" />
+            <div className={`rounded-xl p-6 mb-4 flex justify-center ${cardtheme === 'dark' ? 'bg-slate-900' : 'bg-slate-50'}`}>
+              <Statscard {...cardprops} />
             </div>
-            <div className="bg-slate-50 rounded-lg p-4">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-sm font-medium text-slate-600">Markdown</span>
-                <button
-                  onClick={() => copytoClipboard(generatecardmarkdown(cardprops), 'card')}
-                  className="text-sm text-emerald-600 hover:text-emerald-700 font-medium flex items-center gap-1"
-                >
-                  {copied === 'card' ? (
-                    <>
-                      <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg>
-                      Copied!
-                    </>
-                  ) : (
-                    <>
-                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
-                      Copy
-                    </>
-                  )}
-                </button>
+            <details className="group">
+              <summary className="flex items-center justify-between cursor-pointer p-3 bg-slate-50 rounded-lg hover:bg-slate-100 transition-colors">
+                <span className="text-sm font-medium text-slate-600 flex items-center gap-2">
+                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/>
+                  </svg>
+                  View Markdown
+                </span>
+                <svg className="w-4 h-4 text-slate-400 transition-transform group-open:rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7"/>
+                </svg>
+              </summary>
+              <div className="mt-3 p-4 bg-slate-900 rounded-lg">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-xs text-slate-400 font-mono">markdown</span>
+                  <button
+                    onClick={() => copytoClipboard(generatecardmarkdown(cardprops), 'card')}
+                    className="text-xs text-emerald-400 hover:text-emerald-300 font-medium flex items-center gap-1"
+                  >
+                    {copied === 'card' ? (
+                      <>
+                        <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg>
+                        Copied!
+                      </>
+                    ) : (
+                      <>
+                        <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+                        Copy
+                      </>
+                    )}
+                  </button>
+                </div>
+                <code className="text-xs text-emerald-300 font-mono break-all block">{generatecardmarkdown(cardprops)}</code>
               </div>
-              <code className="text-xs text-slate-600 break-all">{generatecardmarkdown(cardprops)}</code>
-            </div>
+            </details>
           </div>
 
           <div className="glass-card rounded-xl p-6">
-            <h3 className="text-lg font-semibold text-slate-900 mb-4">Achievement Badges</h3>
+            <h3 className="text-lg font-semibold text-slate-900 mb-2">Achievement Badges</h3>
             <p className="text-sm text-slate-500 mb-4">Add individual badges to your README</p>
-            <div className="space-y-4">
-              <div className="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
-                <div className="flex items-center gap-3">
-                  <img src={getbadgeurl('level', stats.level, 'light')} alt="Level badge" />
-                </div>
-                <button
-                  onClick={() => copytoClipboard(generatebadgemarkdown('level', stats.level, 'light'), 'level')}
-                  className="text-sm text-emerald-600 hover:text-emerald-700 font-medium"
-                >
-                  {copied === 'level' ? 'Copied!' : 'Copy'}
-                </button>
+            <div className="space-y-3">
+              <div className="flex items-center justify-between p-4 bg-slate-50 rounded-xl relative">
+                <Statsbadge type="level" value={stats.level.toString()} theme="light" />
+                <details className="group ml-4 relative">
+                  <summary className="cursor-pointer text-sm text-emerald-600 hover:text-emerald-700 font-medium flex items-center gap-1">
+                    {copied === 'level' ? 'Copied!' : 'Copy'}
+                    <svg className="w-4 h-4 transition-transform group-open:rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7"/>
+                    </svg>
+                  </summary>
+                  <div className="absolute right-0 mt-2 p-3 bg-slate-900 rounded-lg shadow-xl z-10 min-w-[300px]">
+                    <div className="flex items-center justify-between mb-1">
+                      <span className="text-xs text-slate-400 font-mono">markdown</span>
+                      <button onClick={() => copytoClipboard(generatebadgemarkdown('level', stats.level, 'light'), 'level')} className="text-xs text-emerald-400">Copy</button>
+                    </div>
+                    <code className="text-xs text-emerald-300 font-mono break-all">{generatebadgemarkdown('level', stats.level, 'light')}</code>
+                  </div>
+                </details>
               </div>
-              <div className="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
-                <div className="flex items-center gap-3">
-                  <img src={getbadgeurl('xp', stats.xp.toLocaleString(), 'light')} alt="XP badge" />
-                </div>
-                <button
-                  onClick={() => copytoClipboard(generatebadgemarkdown('xp', stats.xp.toLocaleString(), 'light'), 'xp')}
-                  className="text-sm text-emerald-600 hover:text-emerald-700 font-medium"
-                >
-                  {copied === 'xp' ? 'Copied!' : 'Copy'}
-                </button>
+              <div className="flex items-center justify-between p-4 bg-slate-50 rounded-xl relative">
+                <Statsbadge type="xp" value={stats.xp.toLocaleString()} theme="light" />
+                <details className="group ml-4 relative">
+                  <summary className="cursor-pointer text-sm text-emerald-600 hover:text-emerald-700 font-medium flex items-center gap-1">
+                    {copied === 'xp' ? 'Copied!' : 'Copy'}
+                    <svg className="w-4 h-4 transition-transform group-open:rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7"/>
+                    </svg>
+                  </summary>
+                  <div className="absolute right-0 mt-2 p-3 bg-slate-900 rounded-lg shadow-xl z-10 min-w-[300px]">
+                    <div className="flex items-center justify-between mb-1">
+                      <span className="text-xs text-slate-400 font-mono">markdown</span>
+                      <button onClick={() => copytoClipboard(generatebadgemarkdown('xp', stats.xp.toLocaleString(), 'light'), 'xp')} className="text-xs text-emerald-400">Copy</button>
+                    </div>
+                    <code className="text-xs text-emerald-300 font-mono break-all">{generatebadgemarkdown('xp', stats.xp.toLocaleString(), 'light')}</code>
+                  </div>
+                </details>
               </div>
-              <div className="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
-                <div className="flex items-center gap-3">
-                  <img src={getbadgeurl('streak', `${stats.currentStreak} days`, 'light')} alt="Streak badge" />
-                </div>
-                <button
-                  onClick={() => copytoClipboard(generatebadgemarkdown('streak', `${stats.currentStreak} days`, 'light'), 'streak')}
-                  className="text-sm text-emerald-600 hover:text-emerald-700 font-medium"
-                >
-                  {copied === 'streak' ? 'Copied!' : 'Copy'}
-                </button>
+              <div className="flex items-center justify-between p-4 bg-slate-50 rounded-xl relative">
+                <Statsbadge type="streak" value={`${stats.currentStreak}`} theme="light" />
+                <details className="group ml-4 relative">
+                  <summary className="cursor-pointer text-sm text-emerald-600 hover:text-emerald-700 font-medium flex items-center gap-1">
+                    {copied === 'streak' ? 'Copied!' : 'Copy'}
+                    <svg className="w-4 h-4 transition-transform group-open:rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7"/>
+                    </svg>
+                  </summary>
+                  <div className="absolute right-0 mt-2 p-3 bg-slate-900 rounded-lg shadow-xl z-10 min-w-[300px]">
+                    <div className="flex items-center justify-between mb-1">
+                      <span className="text-xs text-slate-400 font-mono">markdown</span>
+                      <button onClick={() => copytoClipboard(generatebadgemarkdown('streak', `${stats.currentStreak} days`, 'light'), 'streak')} className="text-xs text-emerald-400">Copy</button>
+                    </div>
+                    <code className="text-xs text-emerald-300 font-mono break-all">{generatebadgemarkdown('streak', `${stats.currentStreak} days`, 'light')}</code>
+                  </div>
+                </details>
               </div>
               {completedcourses.map(course => (
-                <div key={course.id} className="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
-                  <div className="flex items-center gap-3">
-                    <img src={getbadgeurl('course', course.title.substring(0, 20), 'light')} alt={`${course.title} badge`} />
-                  </div>
-                  <button
-                    onClick={() => copytoClipboard(generatebadgemarkdown('course', course.title.substring(0, 20), 'light'), `course-${course.id}`)}
-                    className="text-sm text-emerald-600 hover:text-emerald-700 font-medium"
-                  >
-                    {copied === `course-${course.id}` ? 'Copied!' : 'Copy'}
-                  </button>
+                <div key={course.id} className="flex items-center justify-between p-4 bg-slate-50 rounded-xl relative">
+                  <Statsbadge type="course" value={course.title.substring(0, 15)} theme="light" />
+                  <details className="group ml-4 relative">
+                    <summary className="cursor-pointer text-sm text-emerald-600 hover:text-emerald-700 font-medium flex items-center gap-1">
+                      {copied === `course-${course.id}` ? 'Copied!' : 'Copy'}
+                      <svg className="w-4 h-4 transition-transform group-open:rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7"/>
+                      </svg>
+                    </summary>
+                    <div className="absolute right-0 mt-2 p-3 bg-slate-900 rounded-lg shadow-xl z-10 min-w-[300px]">
+                      <div className="flex items-center justify-between mb-1">
+                        <span className="text-xs text-slate-400 font-mono">markdown</span>
+                        <button onClick={() => copytoClipboard(generatebadgemarkdown('course', course.title.substring(0, 20), 'light'), `course-${course.id}`)} className="text-xs text-emerald-400">Copy</button>
+                      </div>
+                      <code className="text-xs text-emerald-300 font-mono break-all">{generatebadgemarkdown('course', course.title.substring(0, 20), 'light')}</code>
+                    </div>
+                  </details>
                 </div>
               ))}
             </div>
