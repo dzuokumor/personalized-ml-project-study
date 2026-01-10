@@ -314,6 +314,24 @@ export default function sidebar({ isopen, onclose }) {
               </svg>
               <span>Achievements</span>
             </NavLink>
+            {user && (
+              <NavLink
+                to="/profile"
+                onClick={onclose}
+                className={({ isActive }) =>
+                  `flex items-center gap-3 px-3 py-2 rounded-xl text-sm transition-colors ${
+                    isActive
+                      ? 'bg-emerald-50 text-emerald-700 font-medium'
+                      : 'text-slate-500 hover:bg-slate-50 hover:text-slate-700'
+                  }`
+                }
+              >
+                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                </svg>
+                <span>Profile</span>
+              </NavLink>
+            )}
           </div>
         </div>
       </nav>

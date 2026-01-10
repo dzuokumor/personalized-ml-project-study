@@ -13,6 +13,7 @@ export default function lesson() {
   const { courseid, lessonid } = useParams()
   const navigate = useNavigate()
   const [showquiz, setshowquiz] = useState(false)
+  const [isretake, setisretake] = useState(false)
   const [note, setnote] = useState('')
   const [showlogin, setshowlogin] = useState(false)
 
@@ -28,6 +29,7 @@ export default function lesson() {
   const savenote = usestore((state) => state.savenote)
   const getnote = usestore((state) => state.getnote)
   const savequizscore = usestore((state) => state.savequizscore)
+  const getquizscore = usestore((state) => state.getquizscore)
 
   const course = getcoursebyid(courseid)
   const lesson = course?.lessons.find(l => l.id === lessonid)
@@ -37,6 +39,7 @@ export default function lesson() {
 
   useEffect(() => {
     setshowquiz(false)
+    setisretake(false)
     setnote('')
   }, [courseid, lessonid])
 
@@ -86,6 +89,7 @@ export default function lesson() {
   const nextlesson = lessonidx < course.lessons.length - 1 ? course.lessons[lessonidx + 1] : null
   const iscomplete = islessonComplete(courseid, lessonid)
   const bookmarked = isbookmarked(courseid, lessonid)
+  const existingquizscore = getquizscore(courseid, lessonid)
 
   const checkcoursecompletion = () => {
     if (!course) return
@@ -107,14 +111,14 @@ export default function lesson() {
     }
   }
 
-  const handlequizcomplete = (score) => {
+  const handlequizcomplete = (score, isretakequiz) => {
     savequizscore(courseid, lessonid, score, lesson.quiz.length)
     if (!islessonComplete(courseid, lessonid)) {
       markcomplete(courseid, lessonid)
       completelesson(courseid, lessonid)
       checkcoursecompletion()
     }
-    if (score >= Math.ceil(lesson.quiz.length * 0.7)) {
+    if (!isretakequiz && score >= Math.ceil(lesson.quiz.length * 0.7)) {
       passquiz(score, lesson.quiz.length)
     }
   }
@@ -206,25 +210,64 @@ export default function lesson() {
 
           {lesson.quiz && lesson.quiz.length > 0 && (
             <div className="glass-card rounded-xl p-8 mb-6">
-              <div className="flex items-center justify-between">
+              {existingquizscore ? (
                 <div>
-                  <h3 className="text-lg font-semibold text-slate-900">Test Knowledge</h3>
-                  <p className="text-slate-500 text-sm">{lesson.quiz.length} questions</p>
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center gap-3">
+                      <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${
+                        existingquizscore.score >= Math.ceil(lesson.quiz.length * 0.7)
+                          ? 'bg-emerald-100'
+                          : 'bg-amber-100'
+                      }`}>
+                        {existingquizscore.score >= Math.ceil(lesson.quiz.length * 0.7) ? (
+                          <svg className="w-6 h-6 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                          </svg>
+                        ) : (
+                          <svg className="w-6 h-6 text-amber-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                          </svg>
+                        )}
+                      </div>
+                      <div>
+                        <h3 className="text-lg font-semibold text-slate-900">Quiz Completed</h3>
+                        <p className="text-slate-500 text-sm">
+                          Score: {existingquizscore.score}/{existingquizscore.total} ({Math.round((existingquizscore.score / existingquizscore.total) * 100)}%)
+                        </p>
+                      </div>
+                    </div>
+                    <button
+                      onClick={() => { setshowquiz(true); setisretake(true) }}
+                      className="px-5 py-2.5 bg-slate-100 text-slate-700 rounded-xl font-medium hover:bg-slate-200 transition-colors"
+                    >
+                      Retake Quiz
+                    </button>
+                  </div>
+                  <p className="text-xs text-slate-400">
+                    Note: Retaking will update your score but won't add to your XP or quiz stats.
+                  </p>
                 </div>
-                <button
-                  onClick={() => setshowquiz(true)}
-                  className="px-5 py-2.5 btn-primary text-white rounded-xl font-medium"
-                >
-                  Start Quiz
-                </button>
-              </div>
+              ) : (
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h3 className="text-lg font-semibold text-slate-900">Test Knowledge</h3>
+                    <p className="text-slate-500 text-sm">{lesson.quiz.length} questions</p>
+                  </div>
+                  <button
+                    onClick={() => setshowquiz(true)}
+                    className="px-5 py-2.5 btn-primary text-white rounded-xl font-medium"
+                  >
+                    Start Quiz
+                  </button>
+                </div>
+              )}
             </div>
           )}
         </>
       ) : (
         <div className="mb-6">
           <button
-            onClick={() => setshowquiz(false)}
+            onClick={() => { setshowquiz(false); setisretake(false) }}
             className="text-sm text-slate-500 hover:text-slate-700 mb-4 inline-flex items-center gap-1"
           >
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -232,7 +275,19 @@ export default function lesson() {
             </svg>
             Back to lesson
           </button>
-          <Quiz questions={lesson.quiz} onComplete={handlequizcomplete} coursetitle={lesson.title} />
+          {isretake && (
+            <div className="mb-4 p-3 bg-amber-50 border border-amber-200 rounded-lg">
+              <p className="text-sm text-amber-800">
+                <strong>Retake Mode:</strong> Your score will be updated but XP and quiz stats won't change.
+              </p>
+            </div>
+          )}
+          <Quiz
+            questions={lesson.quiz}
+            onComplete={(score) => handlequizcomplete(score, isretake)}
+            coursetitle={lesson.title}
+            isretake={isretake}
+          />
         </div>
       )}
 
@@ -252,25 +307,25 @@ export default function lesson() {
         </div>
 
         <div className="flex items-center gap-4">
-          {!iscomplete && (
+          {nextlesson ? (
             <button
               onClick={handlemarkcomplete}
-              className="px-6 py-2 bg-emerald-600 text-white rounded-lg font-medium hover:bg-emerald-700 transition-colors"
-            >
-              {nextlesson ? 'Complete & Continue' : 'Mark Complete'}
-            </button>
-          )}
-
-          {nextlesson && iscomplete && (
-            <Link
-              to={`/course/${courseid}/lesson/${nextlesson.id}`}
               className="inline-flex items-center gap-2 px-6 py-2 bg-emerald-600 text-white rounded-lg font-medium hover:bg-emerald-700 transition-colors"
             >
-              <span>Next: {nextlesson.title}</span>
+              <span>{iscomplete ? 'Next' : 'Complete & Next'}</span>
               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
               </svg>
-            </Link>
+            </button>
+          ) : (
+            !iscomplete && (
+              <button
+                onClick={handlemarkcomplete}
+                className="px-6 py-2 bg-emerald-600 text-white rounded-lg font-medium hover:bg-emerald-700 transition-colors"
+              >
+                Mark Complete
+              </button>
+            )
           )}
         </div>
       </div>

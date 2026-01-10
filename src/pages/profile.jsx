@@ -103,7 +103,7 @@ export default function profile() {
 
   const getcourseprogress = () => {
     return allcourses.map(course => {
-      const completed = course.lessons.filter(l => progress[`${course.id}/${l.id}`]).length
+      const completed = course.lessons.filter(l => progress[course.id]?.[l.id]).length
       return {
         ...course,
         completed,
@@ -118,7 +118,7 @@ export default function profile() {
     let completedlessons = 0
     curriculumcourses.forEach(course => {
       totallessons += course.lessons.length
-      completedlessons += course.lessons.filter(l => progress[`${course.id}/${l.id}`]).length
+      completedlessons += course.lessons.filter(l => progress[course.id]?.[l.id]).length
     })
     return {
       completed: completedlessons,
