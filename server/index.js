@@ -235,9 +235,8 @@ app.post('/api/github/create-repo', async (req, res) => {
   }
 })
 
-app.get('/api/badge/:type/:value', (req, res) => {
-  const { type, value } = req.params
-  const { theme } = req.query
+app.get('/api/badge', (req, res) => {
+  const { type = 'level', value = '1', theme } = req.query
 
   const colors = {
     light: { bg: '#ffffff', text: '#1e293b', accent: '#10b981', border: '#e2e8f0' },
@@ -279,9 +278,8 @@ app.get('/api/badge/:type/:value', (req, res) => {
   res.send(svg)
 })
 
-app.get('/api/card/:username', async (req, res) => {
-  const { username } = req.params
-  const { theme, level, xp, streak, lessons, courses } = req.query
+app.get('/api/card', async (req, res) => {
+  const { username = 'Learner', theme, level, xp, streak, lessons, courses } = req.query
 
   const colors = {
     light: { bg: '#ffffff', card: '#f8fafc', text: '#1e293b', muted: '#64748b', accent: '#10b981', border: '#e2e8f0' },

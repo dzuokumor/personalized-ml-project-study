@@ -52,7 +52,12 @@ export const getbadgeurl = (type, value, theme = 'light') => {
   const baseurl = import.meta.env.PROD
     ? 'https://neuron-ml.vercel.app'
     : 'http://localhost:3001'
-  return `${baseurl}/api/badge/${type}/${encodeURIComponent(value)}?theme=${theme}`
+  const params = new URLSearchParams({
+    type,
+    value: String(value),
+    theme
+  })
+  return `${baseurl}/api/badge?${params}`
 }
 
 export const getcardurl = ({ username, level, xp, streak, lessons, courses, theme = 'light' }) => {
@@ -60,6 +65,7 @@ export const getcardurl = ({ username, level, xp, streak, lessons, courses, them
     ? 'https://neuron-ml.vercel.app'
     : 'http://localhost:3001'
   const params = new URLSearchParams({
+    username: username || 'Learner',
     level: level || '1',
     xp: xp || '0',
     streak: streak || '0',
@@ -67,7 +73,7 @@ export const getcardurl = ({ username, level, xp, streak, lessons, courses, them
     courses: courses || '0',
     theme
   })
-  return `${baseurl}/api/card/${encodeURIComponent(username)}?${params}`
+  return `${baseurl}/api/card?${params}`
 }
 
 export const generatebadgemarkdown = (type, value, theme = 'light') => {

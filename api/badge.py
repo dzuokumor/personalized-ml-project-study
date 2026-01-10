@@ -1,18 +1,14 @@
 from http.server import BaseHTTPRequestHandler
-from urllib.parse import parse_qs, urlparse
+from urllib.parse import parse_qs, urlparse, unquote
 
 class handler(BaseHTTPRequestHandler):
     def do_GET(self):
         parsed = urlparse(self.path)
         query = parse_qs(parsed.query)
+
+        badge_type = query.get('type', ['level'])[0]
+        value = unquote(query.get('value', ['1'])[0])
         theme = query.get('theme', ['light'])[0]
-
-        path_parts = parsed.path.strip('/').split('/')
-        badge_type = path_parts[2] if len(path_parts) > 2 else 'level'
-        value = path_parts[3] if len(path_parts) > 3 else '1'
-
-        from urllib.parse import unquote
-        value = unquote(value)
 
         colors = {
             'light': {'bg': '#ffffff', 'text': '#1e293b', 'accent': '#10b981', 'border': '#e2e8f0'},

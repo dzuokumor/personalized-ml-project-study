@@ -6,9 +6,7 @@ class handler(BaseHTTPRequestHandler):
         parsed = urlparse(self.path)
         query = parse_qs(parsed.query)
 
-        path_parts = parsed.path.strip('/').split('/')
-        username = unquote(path_parts[2]) if len(path_parts) > 2 else 'Learner'
-
+        username = unquote(query.get('username', ['Learner'])[0])
         theme = query.get('theme', ['light'])[0]
         level = query.get('level', ['1'])[0]
         xp = query.get('xp', ['0'])[0]
