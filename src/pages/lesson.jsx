@@ -4,6 +4,7 @@ import { getcoursebyid } from '../data/courses'
 import { usestore } from '../store/usestore'
 import { useauth } from '../contexts/authcontext'
 import { usestats } from '../hooks/usestats'
+import { useprogress } from '../hooks/useprogress'
 import LessonContent from '../components/course/lessoncontent'
 import Quiz from '../components/course/quiz'
 import Codeexecutor from '../components/course/codeexecutor'
@@ -19,6 +20,7 @@ export default function lesson() {
 
   const { user, loading } = useauth()
   const { completelesson, passquiz, completecourse } = usestats()
+  const { markcomplete: markprogresscomplete, iscomplete: isprogresscomplete } = useprogress()
 
   const markcomplete = usestore((state) => state.markcomplete)
   const islessonComplete = usestore((state) => state.islessonComplete)
@@ -103,6 +105,7 @@ export default function lesson() {
   const handlemarkcomplete = () => {
     if (!islessonComplete(courseid, lessonid)) {
       markcomplete(courseid, lessonid)
+      markprogresscomplete(courseid, lessonid)
       completelesson(courseid, lessonid)
       checkcoursecompletion()
     }
@@ -115,6 +118,7 @@ export default function lesson() {
     savequizscore(courseid, lessonid, score, lesson.quiz.length)
     if (!islessonComplete(courseid, lessonid)) {
       markcomplete(courseid, lessonid)
+      markprogresscomplete(courseid, lessonid)
       completelesson(courseid, lessonid)
       checkcoursecompletion()
     }
