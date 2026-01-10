@@ -231,6 +231,36 @@ export function usestats() {
     return currentunlocked.filter(id => !prevunlocked.includes(id))
   }, [stats])
 
+  const repairstats = useCallback((progress, quizscores) => {
+    let lessonscount = 0
+    let perfectcount = 0
+
+    Object.keys(progress).forEach(courseid => {
+      const courseprogress = progress[courseid]
+      if (courseprogress && typeof courseprogress === 'object') {
+        lessonscount += Object.values(courseprogress).filter(Boolean).length
+      }
+    })
+
+    Object.values(quizscores).forEach(quiz => {
+      if (quiz && quiz.total > 0 && quiz.score >= quiz.total) {
+        perfectcount++
+      }
+    })
+
+    const current = statsref.current
+    if (current.lessonsCompleted !== lessonscount || current.perfectQuizzes !== perfectcount) {
+      const repaired = {
+        ...current,
+        lessonsCompleted: Math.max(current.lessonsCompleted, lessonscount),
+        perfectQuizzes: Math.max(current.perfectQuizzes, perfectcount)
+      }
+      savestats(repaired)
+      return true
+    }
+    return false
+  }, [savestats])
+
   return {
     stats,
     loading,
@@ -245,6 +275,7 @@ export function usestats() {
     completecourse,
     recordactivity,
     getunlockedachievements,
-    getnewachievements
+    getnewachievements,
+    repairstats
   }
 }

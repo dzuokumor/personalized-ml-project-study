@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useauth } from '../contexts/authcontext'
 import { usestats } from '../hooks/usestats'
 import { usestore } from '../store/usestore'
@@ -87,7 +87,7 @@ const achievementicons = {
 
 export default function profile() {
   const { user, signout, avatar, githubconnected, connectgithubforrepos } = useauth()
-  const { stats, levels, achievements, getunlockedachievements, getnextlevel } = usestats()
+  const { stats, levels, achievements, getunlockedachievements, getnextlevel, repairstats } = usestats()
   const progress = usestore((state) => state.progress)
   const quizscores = usestore((state) => state.quizscores)
   const [activeTab, setactiveTab] = useState('overview')
@@ -95,6 +95,12 @@ export default function profile() {
   const [copied, setcopied] = useState(null)
   const [cardtheme, setcardtheme] = useState('light')
   const [publishcourse, setpublishcourse] = useState(null)
+
+  useEffect(() => {
+    if (Object.keys(progress).length > 0 || Object.keys(quizscores).length > 0) {
+      repairstats(progress, quizscores)
+    }
+  }, [progress, quizscores, repairstats])
 
   const unlockedachievements = getunlockedachievements()
   const nextlevel = getnextlevel(stats.level)
