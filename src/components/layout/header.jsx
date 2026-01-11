@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
-import { courses } from '../../data/courses'
+import { allcourses } from '../../data/courses'
 import { useauth } from '../../contexts/authcontext'
 import { usestats } from '../../hooks/usestats'
 import Login from '../auth/login'
@@ -26,12 +26,13 @@ export default function Header({ onmenuclick }) {
     }
 
     const matches = []
-    courses.forEach(course => {
+    allcourses.forEach(course => {
       course.lessons.forEach(lesson => {
-        if (
-          lesson.title.toLowerCase().includes(value.toLowerCase()) ||
-          lesson.concepts.some(c => c.toLowerCase().includes(value.toLowerCase()))
-        ) {
+        const titlematches = lesson.title.toLowerCase().includes(value.toLowerCase())
+        const conceptmatches = lesson.concepts && lesson.concepts.some(c => c.toLowerCase().includes(value.toLowerCase()))
+        const coursematches = course.title.toLowerCase().includes(value.toLowerCase())
+
+        if (titlematches || conceptmatches || coursematches) {
           matches.push({
             courseid: course.id,
             coursetitle: course.title,

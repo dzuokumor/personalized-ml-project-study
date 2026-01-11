@@ -216,52 +216,87 @@ export default function profile() {
 
   return (
     <div className="max-w-5xl mx-auto">
-      <div className="bg-gradient-to-br from-emerald-600 to-emerald-700 rounded-2xl p-4 sm:p-8 mb-6 sm:mb-8 text-white relative overflow-hidden">
-        <div className="absolute inset-0 opacity-10">
-          <svg className="w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
+      <div className="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 rounded-2xl p-4 sm:p-8 mb-6 sm:mb-8 text-white relative overflow-hidden border border-slate-700/50">
+        <div className="absolute inset-0 opacity-15">
+          <svg className="w-full h-full" viewBox="0 0 200 120" preserveAspectRatio="xMidYMid slice">
             <defs>
-              <pattern id="dots" x="0" y="0" width="10" height="10" patternUnits="userSpaceOnUse">
-                <circle cx="2" cy="2" r="1" fill="white"/>
-              </pattern>
+              <linearGradient id="neuralGradProfile" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stopColor="#10b981" stopOpacity="0.6" />
+                <stop offset="50%" stopColor="#06b6d4" stopOpacity="0.4" />
+                <stop offset="100%" stopColor="#10b981" stopOpacity="0.2" />
+              </linearGradient>
             </defs>
-            <rect width="100" height="100" fill="url(#dots)"/>
+            <circle cx="20" cy="30" r="3" fill="#10b981" opacity="0.5" />
+            <circle cx="60" cy="20" r="2" fill="#06b6d4" opacity="0.4" />
+            <circle cx="100" cy="40" r="4" fill="#10b981" opacity="0.5" />
+            <circle cx="140" cy="25" r="2" fill="#06b6d4" opacity="0.4" />
+            <circle cx="180" cy="35" r="3" fill="#10b981" opacity="0.5" />
+            <circle cx="40" cy="70" r="2" fill="#06b6d4" opacity="0.4" />
+            <circle cx="80" cy="80" r="3" fill="#10b981" opacity="0.5" />
+            <circle cx="120" cy="65" r="2" fill="#06b6d4" opacity="0.4" />
+            <circle cx="160" cy="75" r="4" fill="#10b981" opacity="0.5" />
+            <circle cx="30" cy="100" r="2" fill="#06b6d4" opacity="0.4" />
+            <circle cx="90" cy="110" r="3" fill="#10b981" opacity="0.5" />
+            <circle cx="150" cy="95" r="2" fill="#06b6d4" opacity="0.4" />
+            <path d="M20,30 Q40,25 60,20" stroke="url(#neuralGradProfile)" strokeWidth="0.5" fill="none" />
+            <path d="M60,20 Q80,30 100,40" stroke="url(#neuralGradProfile)" strokeWidth="0.5" fill="none" />
+            <path d="M100,40 Q120,32 140,25" stroke="url(#neuralGradProfile)" strokeWidth="0.5" fill="none" />
+            <path d="M140,25 Q160,30 180,35" stroke="url(#neuralGradProfile)" strokeWidth="0.5" fill="none" />
+            <path d="M20,30 Q30,50 40,70" stroke="url(#neuralGradProfile)" strokeWidth="0.5" fill="none" />
+            <path d="M60,20 Q70,50 80,80" stroke="url(#neuralGradProfile)" strokeWidth="0.5" fill="none" />
+            <path d="M100,40 Q110,52 120,65" stroke="url(#neuralGradProfile)" strokeWidth="0.5" fill="none" />
+            <path d="M140,25 Q150,50 160,75" stroke="url(#neuralGradProfile)" strokeWidth="0.5" fill="none" />
+            <path d="M40,70 Q60,75 80,80" stroke="url(#neuralGradProfile)" strokeWidth="0.5" fill="none" />
+            <path d="M80,80 Q100,72 120,65" stroke="url(#neuralGradProfile)" strokeWidth="0.5" fill="none" />
+            <path d="M120,65 Q140,70 160,75" stroke="url(#neuralGradProfile)" strokeWidth="0.5" fill="none" />
+            <path d="M40,70 Q35,85 30,100" stroke="url(#neuralGradProfile)" strokeWidth="0.5" fill="none" />
+            <path d="M80,80 Q85,95 90,110" stroke="url(#neuralGradProfile)" strokeWidth="0.5" fill="none" />
+            <path d="M120,65 Q135,80 150,95" stroke="url(#neuralGradProfile)" strokeWidth="0.5" fill="none" />
           </svg>
         </div>
         <div className="relative z-10">
           <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-6 text-center sm:text-left">
-            <Avatarupload size="large" />
+            <div className="relative">
+              <Avatarupload size="large" />
+              <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-emerald-500 rounded-full border-2 border-slate-900 flex items-center justify-center">
+                <div className="w-2 h-2 bg-white rounded-full" />
+              </div>
+            </div>
             <div className="flex-1">
-              <h1 className="text-2xl sm:text-3xl font-bold mb-1">{stats.username || user.email?.split('@')[0]}</h1>
-              <p className="text-emerald-100 mb-4 text-sm sm:text-base truncate max-w-full">{stats.fullname || user.email}</p>
+              <div className="flex items-center gap-2 justify-center sm:justify-start">
+                <h1 className="text-2xl sm:text-3xl font-bold">{stats.username || user.email?.split('@')[0]}</h1>
+                <span className="px-2 py-0.5 bg-emerald-500/20 border border-emerald-500/30 rounded text-xs font-mono text-emerald-400">LVL {stats.level}</span>
+              </div>
+              <p className="text-slate-400 text-sm sm:text-base truncate max-w-full mt-1">{stats.fullname || user.email}</p>
+              <p className="text-xs font-mono text-cyan-400 mt-1">{stats.title}</p>
             </div>
           </div>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 mt-4">
-            <div className="bg-white/10 rounded-xl p-3 text-center">
-              <p className="text-xs sm:text-sm text-emerald-100">Level</p>
-              <p className="text-lg sm:text-xl font-bold">{stats.level}</p>
-              <p className="text-xs text-emerald-200">{stats.title}</p>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3 mt-5">
+            <div className="bg-slate-800/60 rounded-lg p-3 border border-slate-700/50">
+              <span className="text-[10px] text-slate-500 uppercase tracking-wider font-mono">Level</span>
+              <p className="text-lg sm:text-xl font-bold text-white font-mono">{stats.level}</p>
             </div>
-            <div className="bg-white/10 rounded-xl p-3 text-center">
-              <p className="text-xs sm:text-sm text-emerald-100">Total XP</p>
-              <p className="text-lg sm:text-xl font-bold">{stats.xp.toLocaleString()}</p>
+            <div className="bg-slate-800/60 rounded-lg p-3 border border-slate-700/50">
+              <span className="text-[10px] text-slate-500 uppercase tracking-wider font-mono">Total XP</span>
+              <p className="text-lg sm:text-xl font-bold text-emerald-400 font-mono">{stats.xp.toLocaleString()}</p>
             </div>
-            <div className="bg-white/10 rounded-xl p-3 text-center">
-              <p className="text-xs sm:text-sm text-emerald-100">Streak</p>
-              <p className="text-lg sm:text-xl font-bold">{stats.currentStreak} 🔥</p>
+            <div className="bg-slate-800/60 rounded-lg p-3 border border-slate-700/50">
+              <span className="text-[10px] text-slate-500 uppercase tracking-wider font-mono">Streak</span>
+              <p className="text-lg sm:text-xl font-bold text-orange-400 font-mono">{stats.currentStreak}<span className="text-sm ml-1">d</span></p>
             </div>
-            <div className="bg-white/10 rounded-xl p-3 text-center">
-              <p className="text-xs sm:text-sm text-emerald-100">Achievements</p>
-              <p className="text-lg sm:text-xl font-bold">{unlockedachievements.length}/{achievements.length}</p>
+            <div className="bg-slate-800/60 rounded-lg p-3 border border-slate-700/50">
+              <span className="text-[10px] text-slate-500 uppercase tracking-wider font-mono">Badges</span>
+              <p className="text-lg sm:text-xl font-bold text-cyan-400 font-mono">{unlockedachievements.length}<span className="text-slate-500">/{achievements.length}</span></p>
             </div>
           </div>
           {nextlevel && (
-            <div className="mt-4">
-              <div className="flex justify-between text-xs sm:text-sm text-emerald-100 mb-1">
-                <span>Progress to {nextlevel.title}</span>
-                <span>{xptonext} XP needed</span>
+            <div className="mt-4 bg-slate-800/40 rounded-lg p-3 border border-slate-700/30">
+              <div className="flex justify-between text-xs font-mono mb-2">
+                <span className="text-slate-400">NEXT: <span className="text-emerald-400">{nextlevel.title}</span></span>
+                <span className="text-slate-500">{xptonext} XP remaining</span>
               </div>
-              <div className="h-2 bg-white/20 rounded-full overflow-hidden">
-                <div className="h-full bg-white rounded-full transition-all duration-500" style={{ width: `${progresspercent}%` }}/>
+              <div className="h-1.5 bg-slate-700 rounded-full overflow-hidden">
+                <div className="h-full bg-gradient-to-r from-emerald-500 to-cyan-500 rounded-full transition-all duration-500" style={{ width: `${progresspercent}%` }}/>
               </div>
             </div>
           )}
