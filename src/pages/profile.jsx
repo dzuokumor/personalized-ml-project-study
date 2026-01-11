@@ -88,7 +88,11 @@ const achievementicons = {
 
 export default function profile() {
   const { user, signout, avatar, githubconnected, connectgithubforrepos } = useauth()
-  const { stats, levels, achievements, getunlockedachievements, getnextlevel, repairstats } = usestats()
+  const {
+    stats, levels, achievements, getunlockedachievements, getnextlevel, repairstats,
+    canchangeusername, canchangefullname, getusernamecoolddown, getfullnamecooldown,
+    setusername, setfullname
+  } = usestats()
   const { progress, syncfrommlocal } = useprogress()
   const storeprogress = usestore((state) => state.progress)
   const quizscores = usestore((state) => state.quizscores)
@@ -97,6 +101,11 @@ export default function profile() {
   const [copied, setcopied] = useState(null)
   const [cardtheme, setcardtheme] = useState('light')
   const [publishcourse, setpublishcourse] = useState(null)
+  const [editingusername, seteditingusername] = useState(false)
+  const [editingfullname, seteditingfullname] = useState(false)
+  const [newusername, setnewusername] = useState('')
+  const [newfullname, setnewfullname] = useState('')
+  const [nameerror, setnameerror] = useState('')
 
   useEffect(() => {
     if (Object.keys(storeprogress).length > 0 || Object.keys(quizscores).length > 0) {
@@ -146,15 +155,49 @@ export default function profile() {
     await signout()
   }
 
+  const handlesaveusername = () => {
+    if (!newusername.trim()) {
+      setnameerror('Username cannot be empty')
+      return
+    }
+    if (newusername.trim().length < 3) {
+      setnameerror('Username must be at least 3 characters')
+      return
+    }
+    const result = setusername(newusername)
+    if (result.success) {
+      seteditingusername(false)
+      setnewusername('')
+      setnameerror('')
+    } else {
+      setnameerror(result.error)
+    }
+  }
+
+  const handlesavefullname = () => {
+    if (!newfullname.trim()) {
+      setnameerror('Full name cannot be empty')
+      return
+    }
+    const result = setfullname(newfullname)
+    if (result.success) {
+      seteditingfullname(false)
+      setnewfullname('')
+      setnameerror('')
+    } else {
+      setnameerror(result.error)
+    }
+  }
+
   const copytoClipboard = async (text, id) => {
     await navigator.clipboard.writeText(text)
     setcopied(id)
     setTimeout(() => setcopied(null), 2000)
   }
 
-  const username = user?.email?.split('@')[0] || 'learner'
+  const displayname = stats.username || user?.email?.split('@')[0] || 'learner'
   const cardprops = {
-    username,
+    username: displayname,
     level: stats.level.toString(),
     xp: stats.xp.toString(),
     streak: stats.currentStreak.toString(),
@@ -187,8 +230,8 @@ export default function profile() {
         <div className="relative z-10 flex items-start gap-6">
           <Avatarupload size="large" />
           <div className="flex-1">
-            <h1 className="text-3xl font-bold mb-1">{user.email?.split('@')[0]}</h1>
-            <p className="text-emerald-100 mb-4">{user.email}</p>
+            <h1 className="text-3xl font-bold mb-1">{stats.username || user.email?.split('@')[0]}</h1>
+            <p className="text-emerald-100 mb-4">{stats.fullname || user.email}</p>
             <div className="flex items-center gap-6">
               <div className="flex items-center gap-2">
                 <div className="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center">
@@ -635,30 +678,136 @@ export default function profile() {
               </div>
             </div>
           </div>
+
+          <div className="glass-card rounded-xl p-6">
+            <h3 className="text-lg font-semibold text-slate-900 mb-6">Profile Info</h3>
+            {nameerror && (
+              <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-600 text-sm">
+                {nameerror}
+              </div>
+            )}
+            <div className="space-y-4">
+              <div className="flex items-center justify-between py-4 border-b border-slate-100">
+                <div className="flex-1">
+                  <div className="flex items-center gap-2">
+                    <p className="font-medium text-slate-900">Username</p>
+                    {!canchangeusername() && (
+                      <span className="text-xs px-2 py-0.5 bg-amber-100 text-amber-700 rounded-full">
+                        {getusernamecoolddown()} days left
+                      </span>
+                    )}
+                  </div>
+                  {editingusername ? (
+                    <div className="flex items-center gap-2 mt-2">
+                      <input
+                        type="text"
+                        value={newusername}
+                        onChange={(e) => setnewusername(e.target.value)}
+                        placeholder="Enter username"
+                        className="flex-1 px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                        maxLength={20}
+                      />
+                      <button
+                        onClick={handlesaveusername}
+                        className="px-4 py-2 bg-emerald-600 text-white rounded-lg text-sm font-medium hover:bg-emerald-700"
+                      >
+                        Save
+                      </button>
+                      <button
+                        onClick={() => { seteditingusername(false); setnewusername(''); setnameerror('') }}
+                        className="px-4 py-2 bg-slate-100 text-slate-600 rounded-lg text-sm font-medium hover:bg-slate-200"
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  ) : (
+                    <p className="text-sm text-slate-500">{stats.username || 'Not set'}</p>
+                  )}
+                </div>
+                {!editingusername && canchangeusername() && (
+                  <button
+                    onClick={() => { seteditingusername(true); setnewusername(stats.username || '') }}
+                    className="text-sm text-emerald-600 hover:text-emerald-700 font-medium"
+                  >
+                    Edit
+                  </button>
+                )}
+              </div>
+
+              <div className="flex items-center justify-between py-4 border-b border-slate-100">
+                <div className="flex-1">
+                  <div className="flex items-center gap-2">
+                    <p className="font-medium text-slate-900">Full Name</p>
+                    {!canchangefullname() && (
+                      <span className="text-xs px-2 py-0.5 bg-amber-100 text-amber-700 rounded-full">
+                        {getfullnamecooldown()} days left
+                      </span>
+                    )}
+                  </div>
+                  {editingfullname ? (
+                    <div className="flex items-center gap-2 mt-2">
+                      <input
+                        type="text"
+                        value={newfullname}
+                        onChange={(e) => setnewfullname(e.target.value)}
+                        placeholder="Enter full name"
+                        className="flex-1 px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                        maxLength={50}
+                      />
+                      <button
+                        onClick={handlesavefullname}
+                        className="px-4 py-2 bg-emerald-600 text-white rounded-lg text-sm font-medium hover:bg-emerald-700"
+                      >
+                        Save
+                      </button>
+                      <button
+                        onClick={() => { seteditingfullname(false); setnewfullname(''); setnameerror('') }}
+                        className="px-4 py-2 bg-slate-100 text-slate-600 rounded-lg text-sm font-medium hover:bg-slate-200"
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  ) : (
+                    <p className="text-sm text-slate-500">{stats.fullname || 'Not set'}</p>
+                  )}
+                </div>
+                {!editingfullname && canchangefullname() && (
+                  <button
+                    onClick={() => { seteditingfullname(true); setnewfullname(stats.fullname || '') }}
+                    className="text-sm text-emerald-600 hover:text-emerald-700 font-medium"
+                  >
+                    Edit
+                  </button>
+                )}
+              </div>
+            </div>
+            <p className="text-xs text-slate-400 mt-4">Username can be changed once every 7 days. Full name can be changed once every 30 days.</p>
+          </div>
+
           <div className="glass-card rounded-xl p-6">
             <h3 className="text-lg font-semibold text-slate-900 mb-6">Account Settings</h3>
-          <div className="space-y-4">
-            <div className="flex items-center justify-between py-4 border-b border-slate-100">
-              <div>
-                <p className="font-medium text-slate-900">Email</p>
-                <p className="text-sm text-slate-500">{user.email}</p>
+            <div className="space-y-4">
+              <div className="flex items-center justify-between py-4 border-b border-slate-100">
+                <div>
+                  <p className="font-medium text-slate-900">Email</p>
+                  <p className="text-sm text-slate-500">{user.email}</p>
+                </div>
+              </div>
+              <div className="flex items-center justify-between py-4 border-b border-slate-100">
+                <div>
+                  <p className="font-medium text-slate-900">Account Created</p>
+                  <p className="text-sm text-slate-500">{new Date(user.created_at).toLocaleDateString()}</p>
+                </div>
+              </div>
+              <div className="pt-4">
+                <button
+                  onClick={handleSignout}
+                  className="px-6 py-2 bg-red-50 text-red-600 rounded-lg font-medium hover:bg-red-100 transition-colors"
+                >
+                  Sign Out
+                </button>
               </div>
             </div>
-            <div className="flex items-center justify-between py-4 border-b border-slate-100">
-              <div>
-                <p className="font-medium text-slate-900">Account Created</p>
-                <p className="text-sm text-slate-500">{new Date(user.created_at).toLocaleDateString()}</p>
-              </div>
-            </div>
-            <div className="pt-4">
-              <button
-                onClick={handleSignout}
-                className="px-6 py-2 bg-red-50 text-red-600 rounded-lg font-medium hover:bg-red-100 transition-colors"
-              >
-                Sign Out
-              </button>
-            </div>
-          </div>
           </div>
         </div>
       )}

@@ -104,8 +104,11 @@ export default function sidebar({ isopen, onclose }) {
                   </div>
                 )}
                 <div>
-                  <p className="text-sm font-medium text-slate-800">{currentlevel.title}</p>
-                  <p className="text-xs text-slate-500">{stats.xp} XP</p>
+                  <div className="flex items-center gap-1.5">
+                    <p className="text-sm font-semibold text-slate-900">{stats.username || 'Learner'}</p>
+                    <span className="text-xs px-1.5 py-0.5 bg-emerald-100 text-emerald-700 rounded-full font-medium">{currentlevel.title}</span>
+                  </div>
+                  <p className="text-xs text-slate-500">{stats.fullname || `${stats.xp} XP`}</p>
                 </div>
               </div>
               {stats.currentStreak > 0 && (

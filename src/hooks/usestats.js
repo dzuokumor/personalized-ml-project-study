@@ -49,6 +49,10 @@ export function usestats() {
     xp: 0,
     level: 1,
     title: 'Novice',
+    username: '',
+    fullname: '',
+    usernamechangedat: null,
+    fullnamechangedat: null,
     currentStreak: 0,
     longestStreak: 0,
     lastActivityDate: null,
@@ -261,6 +265,66 @@ export function usestats() {
     return false
   }, [savestats])
 
+  const canchangeusername = useCallback(() => {
+    const current = statsref.current
+    if (!current.usernamechangedat) return true
+    const lastchange = new Date(current.usernamechangedat)
+    const now = new Date()
+    const dayspassed = (now - lastchange) / (1000 * 60 * 60 * 24)
+    return dayspassed >= 7
+  }, [])
+
+  const canchangefullname = useCallback(() => {
+    const current = statsref.current
+    if (!current.fullnamechangedat) return true
+    const lastchange = new Date(current.fullnamechangedat)
+    const now = new Date()
+    const dayspassed = (now - lastchange) / (1000 * 60 * 60 * 24)
+    return dayspassed >= 30
+  }, [])
+
+  const getusernamecoolddown = useCallback(() => {
+    const current = statsref.current
+    if (!current.usernamechangedat) return 0
+    const lastchange = new Date(current.usernamechangedat)
+    const now = new Date()
+    const dayspassed = (now - lastchange) / (1000 * 60 * 60 * 24)
+    return Math.max(0, Math.ceil(7 - dayspassed))
+  }, [])
+
+  const getfullnamecooldown = useCallback(() => {
+    const current = statsref.current
+    if (!current.fullnamechangedat) return 0
+    const lastchange = new Date(current.fullnamechangedat)
+    const now = new Date()
+    const dayspassed = (now - lastchange) / (1000 * 60 * 60 * 24)
+    return Math.max(0, Math.ceil(30 - dayspassed))
+  }, [])
+
+  const setusername = useCallback((newusername) => {
+    if (!canchangeusername()) return { success: false, error: 'Username can only be changed once every 7 days' }
+    const current = statsref.current
+    const updated = {
+      ...current,
+      username: newusername.trim(),
+      usernamechangedat: new Date().toISOString()
+    }
+    savestats(updated)
+    return { success: true }
+  }, [canchangeusername, savestats])
+
+  const setfullname = useCallback((newfullname) => {
+    if (!canchangefullname()) return { success: false, error: 'Full name can only be changed once every 30 days' }
+    const current = statsref.current
+    const updated = {
+      ...current,
+      fullname: newfullname.trim(),
+      fullnamechangedat: new Date().toISOString()
+    }
+    savestats(updated)
+    return { success: true }
+  }, [canchangefullname, savestats])
+
   return {
     stats,
     loading,
@@ -276,6 +340,12 @@ export function usestats() {
     recordactivity,
     getunlockedachievements,
     getnewachievements,
-    repairstats
+    repairstats,
+    canchangeusername,
+    canchangefullname,
+    getusernamecoolddown,
+    getfullnamecooldown,
+    setusername,
+    setfullname
   }
 }
