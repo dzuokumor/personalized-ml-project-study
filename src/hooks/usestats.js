@@ -100,6 +100,10 @@ export function usestats() {
         if (cloudstats) {
           const merged = {
             xp: Math.max(localstats?.xp || 0, cloudstats.xp || 0),
+            username: cloudstats.username || localstats?.username || '',
+            fullname: cloudstats.fullname || localstats?.fullname || '',
+            usernamechangedat: cloudstats.usernamechangedat || localstats?.usernamechangedat || null,
+            fullnamechangedat: cloudstats.fullnamechangedat || localstats?.fullnamechangedat || null,
             lessonsCompleted: Math.max(localstats?.lessonsCompleted || 0, cloudstats.lessonsCompleted || 0),
             quizzesPassed: Math.max(localstats?.quizzesPassed || 0, cloudstats.quizzesPassed || 0),
             perfectQuizzes: Math.max(localstats?.perfectQuizzes || 0, cloudstats.perfectQuizzes || 0),
