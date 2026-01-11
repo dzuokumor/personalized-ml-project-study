@@ -216,7 +216,7 @@ export default function profile() {
 
   return (
     <div className="max-w-5xl mx-auto">
-      <div className="bg-gradient-to-br from-emerald-600 to-emerald-700 rounded-2xl p-8 mb-8 text-white relative overflow-hidden">
+      <div className="bg-gradient-to-br from-emerald-600 to-emerald-700 rounded-2xl p-4 sm:p-8 mb-6 sm:mb-8 text-white relative overflow-hidden">
         <div className="absolute inset-0 opacity-10">
           <svg className="w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
             <defs>
@@ -227,59 +227,66 @@ export default function profile() {
             <rect width="100" height="100" fill="url(#dots)"/>
           </svg>
         </div>
-        <div className="relative z-10 flex items-start gap-6">
-          <Avatarupload size="large" />
-          <div className="flex-1">
-            <h1 className="text-3xl font-bold mb-1">{stats.username || user.email?.split('@')[0]}</h1>
-            <p className="text-emerald-100 mb-4">{stats.fullname || user.email}</p>
-            <div className="flex items-center gap-6">
-              <div className="flex items-center gap-2">
-                <div className="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center">
-                  <span className="text-lg font-bold">{stats.level}</span>
-                </div>
-                <div>
-                  <p className="text-sm text-emerald-100">Level</p>
-                  <p className="font-semibold">{stats.title}</p>
-                </div>
+        <div className="relative z-10">
+          <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-6 text-center sm:text-left">
+            <Avatarupload size="large" />
+            <div className="flex-1">
+              <h1 className="text-2xl sm:text-3xl font-bold mb-1">{stats.username || user.email?.split('@')[0]}</h1>
+              <p className="text-emerald-100 mb-4 text-sm sm:text-base truncate max-w-full">{stats.fullname || user.email}</p>
+            </div>
+          </div>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 mt-4">
+            <div className="bg-white/10 rounded-xl p-3 text-center">
+              <p className="text-xs sm:text-sm text-emerald-100">Level</p>
+              <p className="text-lg sm:text-xl font-bold">{stats.level}</p>
+              <p className="text-xs text-emerald-200">{stats.title}</p>
+            </div>
+            <div className="bg-white/10 rounded-xl p-3 text-center">
+              <p className="text-xs sm:text-sm text-emerald-100">Total XP</p>
+              <p className="text-lg sm:text-xl font-bold">{stats.xp.toLocaleString()}</p>
+            </div>
+            <div className="bg-white/10 rounded-xl p-3 text-center">
+              <p className="text-xs sm:text-sm text-emerald-100">Streak</p>
+              <p className="text-lg sm:text-xl font-bold">{stats.currentStreak} 🔥</p>
+            </div>
+            <div className="bg-white/10 rounded-xl p-3 text-center">
+              <p className="text-xs sm:text-sm text-emerald-100">Achievements</p>
+              <p className="text-lg sm:text-xl font-bold">{unlockedachievements.length}/{achievements.length}</p>
+            </div>
+          </div>
+          {nextlevel && (
+            <div className="mt-4">
+              <div className="flex justify-between text-xs sm:text-sm text-emerald-100 mb-1">
+                <span>Progress to {nextlevel.title}</span>
+                <span>{xptonext} XP needed</span>
               </div>
-              <div>
-                <p className="text-sm text-emerald-100">Total XP</p>
-                <p className="text-xl font-bold">{stats.xp.toLocaleString()}</p>
-              </div>
-              <div>
-                <p className="text-sm text-emerald-100">Current Streak</p>
-                <p className="text-xl font-bold">{stats.currentStreak} days</p>
-              </div>
-              <div>
-                <p className="text-sm text-emerald-100">Achievements</p>
-                <p className="text-xl font-bold">{unlockedachievements.length}/{achievements.length}</p>
+              <div className="h-2 bg-white/20 rounded-full overflow-hidden">
+                <div className="h-full bg-white rounded-full transition-all duration-500" style={{ width: `${progresspercent}%` }}/>
               </div>
             </div>
-            {nextlevel && (
-              <div className="mt-4">
-                <div className="flex justify-between text-sm text-emerald-100 mb-1">
-                  <span>Progress to {nextlevel.title}</span>
-                  <span>{xptonext} XP needed</span>
-                </div>
-                <div className="h-2 bg-white/20 rounded-full overflow-hidden">
-                  <div className="h-full bg-white rounded-full transition-all duration-500" style={{ width: `${progresspercent}%` }}/>
-                </div>
-              </div>
-            )}
-          </div>
+          )}
         </div>
       </div>
 
-      <div className="flex gap-2 mb-6 border-b border-slate-200 overflow-x-auto">
+      <div className="flex gap-1 sm:gap-2 mb-6 border-b border-slate-200 overflow-x-auto scrollbar-hide">
         {['overview', 'achievements', 'courses', 'github', 'settings'].map(tab => (
           <button
             key={tab}
             onClick={() => setactiveTab(tab)}
-            className={`px-6 py-3 font-medium capitalize transition-colors relative whitespace-nowrap ${
+            className={`px-3 sm:px-6 py-2 sm:py-3 text-sm sm:text-base font-medium capitalize transition-colors relative whitespace-nowrap ${
               activeTab === tab ? 'text-emerald-600' : 'text-slate-500 hover:text-slate-700'
             }`}
           >
-            {tab === 'github' ? 'GitHub & Share' : tab}
+            {tab === 'github' ? (
+              <span className="hidden sm:inline">GitHub & Share</span>
+            ) : tab === 'achievements' ? (
+              <span className="sm:hidden">Badges</span>
+            ) : null}
+            {tab === 'github' ? (
+              <span className="sm:hidden">GitHub</span>
+            ) : tab === 'achievements' ? (
+              <span className="hidden sm:inline">Achievements</span>
+            ) : tab}
             {activeTab === tab && (
               <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-emerald-600"/>
             )}
@@ -698,27 +705,29 @@ export default function profile() {
                     )}
                   </div>
                   {editingusername ? (
-                    <div className="flex items-center gap-2 mt-2">
+                    <div className="mt-2 space-y-2">
                       <input
                         type="text"
                         value={newusername}
                         onChange={(e) => setnewusername(e.target.value)}
                         placeholder="Enter username"
-                        className="flex-1 px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                        className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
                         maxLength={20}
                       />
-                      <button
-                        onClick={handlesaveusername}
-                        className="px-4 py-2 bg-emerald-600 text-white rounded-lg text-sm font-medium hover:bg-emerald-700"
-                      >
-                        Save
-                      </button>
-                      <button
-                        onClick={() => { seteditingusername(false); setnewusername(''); setnameerror('') }}
-                        className="px-4 py-2 bg-slate-100 text-slate-600 rounded-lg text-sm font-medium hover:bg-slate-200"
-                      >
-                        Cancel
-                      </button>
+                      <div className="flex gap-2">
+                        <button
+                          onClick={handlesaveusername}
+                          className="flex-1 sm:flex-none px-4 py-2 bg-emerald-600 text-white rounded-lg text-sm font-medium hover:bg-emerald-700"
+                        >
+                          Save
+                        </button>
+                        <button
+                          onClick={() => { seteditingusername(false); setnewusername(''); setnameerror('') }}
+                          className="flex-1 sm:flex-none px-4 py-2 bg-slate-100 text-slate-600 rounded-lg text-sm font-medium hover:bg-slate-200"
+                        >
+                          Cancel
+                        </button>
+                      </div>
                     </div>
                   ) : (
                     <p className="text-sm text-slate-500">{stats.username || 'Not set'}</p>
@@ -745,27 +754,29 @@ export default function profile() {
                     )}
                   </div>
                   {editingfullname ? (
-                    <div className="flex items-center gap-2 mt-2">
+                    <div className="mt-2 space-y-2">
                       <input
                         type="text"
                         value={newfullname}
                         onChange={(e) => setnewfullname(e.target.value)}
                         placeholder="Enter full name"
-                        className="flex-1 px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                        className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
                         maxLength={50}
                       />
-                      <button
-                        onClick={handlesavefullname}
-                        className="px-4 py-2 bg-emerald-600 text-white rounded-lg text-sm font-medium hover:bg-emerald-700"
-                      >
-                        Save
-                      </button>
-                      <button
-                        onClick={() => { seteditingfullname(false); setnewfullname(''); setnameerror('') }}
-                        className="px-4 py-2 bg-slate-100 text-slate-600 rounded-lg text-sm font-medium hover:bg-slate-200"
-                      >
-                        Cancel
-                      </button>
+                      <div className="flex gap-2">
+                        <button
+                          onClick={handlesavefullname}
+                          className="flex-1 sm:flex-none px-4 py-2 bg-emerald-600 text-white rounded-lg text-sm font-medium hover:bg-emerald-700"
+                        >
+                          Save
+                        </button>
+                        <button
+                          onClick={() => { seteditingfullname(false); setnewfullname(''); setnameerror('') }}
+                          className="flex-1 sm:flex-none px-4 py-2 bg-slate-100 text-slate-600 rounded-lg text-sm font-medium hover:bg-slate-200"
+                        >
+                          Cancel
+                        </button>
+                      </div>
                     </div>
                   ) : (
                     <p className="text-sm text-slate-500">{stats.fullname || 'Not set'}</p>

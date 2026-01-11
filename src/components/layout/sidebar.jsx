@@ -94,33 +94,41 @@ export default function sidebar({ isopen, onclose }) {
 
         {user && (
           <div className="bg-gradient-to-r from-emerald-50/80 to-teal-50/80 rounded-xl p-3 border border-emerald-100/60 backdrop-blur-sm">
-            <div className="flex items-center justify-between mb-2">
-              <div className="flex items-center gap-2">
-                {avatar ? (
-                  <img src={getoptimizedurl(avatar, { width: 64, height: 64 })} alt="" className="w-8 h-8 rounded-full object-cover" />
-                ) : (
-                  <div className="w-8 h-8 rounded-full bg-emerald-600 flex items-center justify-center text-white text-sm font-bold">
-                    {currentlevel.level}
-                  </div>
-                )}
-                <div>
-                  <div className="flex items-center gap-1.5">
-                    <p className="text-sm font-semibold text-slate-900">{stats.username || 'Learner'}</p>
-                    <span className="text-xs px-1.5 py-0.5 bg-emerald-100 text-emerald-700 rounded-full font-medium">{currentlevel.title}</span>
-                  </div>
-                  <p className="text-xs text-slate-500">{stats.fullname || `${stats.xp} XP`}</p>
-                </div>
-              </div>
-              {stats.currentStreak > 0 && (
-                <div className="flex items-center gap-1 bg-amber-100 px-2 py-1 rounded-full">
-                  <span className="text-amber-500">🔥</span>
-                  <span className="text-xs font-medium text-amber-700">{stats.currentStreak}</span>
+            <div className="flex items-center gap-3 mb-3">
+              {avatar ? (
+                <img src={getoptimizedurl(avatar, { width: 80, height: 80 })} alt="" className="w-10 h-10 rounded-full object-cover ring-2 ring-emerald-200" />
+              ) : (
+                <div className="w-10 h-10 rounded-full bg-emerald-600 flex items-center justify-center text-white text-sm font-bold ring-2 ring-emerald-200">
+                  {currentlevel.level}
                 </div>
               )}
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-1.5 flex-wrap">
+                  <p className="text-sm font-semibold text-slate-900 truncate">{stats.username || 'Learner'}</p>
+                  <span className="text-[10px] px-1.5 py-0.5 bg-emerald-600 text-white rounded font-medium shrink-0">{currentlevel.title}</span>
+                </div>
+                {stats.fullname && (
+                  <p className="text-xs text-slate-500 truncate">{stats.fullname}</p>
+                )}
+              </div>
             </div>
+
+            <div className="flex items-center gap-2 mb-3">
+              <div className="flex-1 flex items-center gap-1.5 px-2 py-1.5 bg-white/60 rounded-lg">
+                <svg className="w-3.5 h-3.5 text-emerald-600" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                </svg>
+                <span className="text-xs font-semibold text-slate-700">{stats.xp} XP</span>
+              </div>
+              <div className="flex items-center gap-1.5 px-2 py-1.5 bg-white/60 rounded-lg">
+                <span className="text-sm">🔥</span>
+                <span className="text-xs font-semibold text-slate-700">{stats.currentStreak}</span>
+              </div>
+            </div>
+
             {nextlevel && (
               <div>
-                <div className="flex justify-between text-xs text-slate-500 mb-1">
+                <div className="flex justify-between text-[10px] text-slate-500 mb-1">
                   <span>Progress to {nextlevel.title}</span>
                   <span>{Math.round(xpprogress)}%</span>
                 </div>

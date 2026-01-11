@@ -141,17 +141,17 @@ export default function lesson() {
 
   return (
     <div className="max-w-4xl">
-      <div className="flex items-center justify-between mb-6">
-        <div className="flex items-center gap-2 text-sm text-slate-500">
-          <Link to="/" className="hover:text-slate-700">Home</Link>
-          <span>/</span>
-          <Link to={`/course/${courseid}`} className="hover:text-slate-700">{course.title}</Link>
-          <span>/</span>
-          <span className="text-slate-900">{lesson.title}</span>
+      <div className="flex items-center justify-between gap-2 mb-4 sm:mb-6">
+        <div className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm text-slate-500 min-w-0 overflow-hidden">
+          <Link to="/" className="hover:text-slate-700 shrink-0">Home</Link>
+          <span className="shrink-0">/</span>
+          <Link to={`/course/${courseid}`} className="hover:text-slate-700 truncate">{course.title}</Link>
+          <span className="shrink-0 hidden sm:inline">/</span>
+          <span className="text-slate-900 truncate hidden sm:inline">{lesson.title}</span>
         </div>
         <button
           onClick={handlebookmark}
-          className={`p-2 rounded-lg transition-colors ${
+          className={`p-2 rounded-lg transition-colors shrink-0 ${
             bookmarked ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-500 hover:bg-slate-200'
           }`}
           title={bookmarked ? 'Remove bookmark' : 'Add bookmark'}
@@ -162,8 +162,8 @@ export default function lesson() {
         </button>
       </div>
 
-      <div className="glass-card rounded-xl p-8 mb-6">
-        <div className="flex items-center gap-3 mb-4">
+      <div className="glass-card rounded-xl p-4 sm:p-8 mb-4 sm:mb-6">
+        <div className="flex flex-wrap items-center gap-2 mb-3 sm:mb-4">
           {lesson.concepts.map((concept, idx) => (
             <span key={idx} className="text-xs bg-emerald-100 text-emerald-700 px-2 py-1 rounded-full">
               {concept}
@@ -171,18 +171,18 @@ export default function lesson() {
           ))}
         </div>
 
-        <h1 className="text-3xl font-bold text-slate-900 mb-2">{lesson.title}</h1>
-        <p className="text-slate-500">{lesson.duration}</p>
+        <h1 className="text-xl sm:text-3xl font-bold text-slate-900 mb-2">{lesson.title}</h1>
+        <p className="text-sm sm:text-base text-slate-500">{lesson.duration}</p>
       </div>
 
       {!showquiz ? (
         <>
-          <div className="glass-card rounded-xl p-8 mb-6">
+          <div className="glass-card rounded-xl p-4 sm:p-8 mb-4 sm:mb-6">
             <LessonContent content={lesson.content} />
           </div>
 
-          <div className="glass-card rounded-xl p-6 mb-6">
-            <h3 className="text-lg font-semibold text-slate-900 mb-3">Notes</h3>
+          <div className="glass-card rounded-xl p-4 sm:p-6 mb-4 sm:mb-6">
+            <h3 className="text-base sm:text-lg font-semibold text-slate-900 mb-3">Notes</h3>
             <textarea
               defaultValue={existingnote}
               onChange={(e) => setnote(e.target.value)}
@@ -197,23 +197,23 @@ export default function lesson() {
             </button>
           </div>
 
-          <div className="glass-card rounded-xl p-6 mb-6">
+          <div className="glass-card rounded-xl p-4 sm:p-6 mb-4 sm:mb-6">
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 border-2 border-blue-200 bg-blue-50/50 rounded-xl flex items-center justify-center">
+              <div className="w-10 h-10 border-2 border-blue-200 bg-blue-50/50 rounded-xl flex items-center justify-center shrink-0">
                 <svg className="w-5 h-5 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
                 </svg>
               </div>
-              <div>
-                <h3 className="text-lg font-semibold text-slate-900">Python Practice</h3>
-                <p className="text-sm text-slate-500">Write and run code to practice concepts</p>
+              <div className="min-w-0">
+                <h3 className="text-base sm:text-lg font-semibold text-slate-900">Python Practice</h3>
+                <p className="text-xs sm:text-sm text-slate-500">Write and run code to practice concepts</p>
               </div>
             </div>
             <Codeexecutor initialcode={lesson.startercode || '# Practice Python code here\n\n'} />
           </div>
 
           {lesson.quiz && lesson.quiz.length > 0 && (
-            <div className="glass-card rounded-xl p-8 mb-6">
+            <div className="glass-card rounded-xl p-4 sm:p-8 mb-4 sm:mb-6">
               {existingquizscore ? (
                 <div>
                   <div className="flex items-center justify-between mb-4">

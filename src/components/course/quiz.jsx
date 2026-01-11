@@ -67,63 +67,63 @@ export default function Quiz({ questions = [], onComplete, coursetitle = 'Assess
 
     return (
       <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm">
-        <div className={`px-8 py-6 ${passed ? 'bg-gradient-to-r from-emerald-500 to-emerald-600' : 'bg-gradient-to-r from-amber-500 to-orange-500'}`}>
+        <div className={`px-4 sm:px-8 py-4 sm:py-6 ${passed ? 'bg-gradient-to-r from-emerald-500 to-emerald-600' : 'bg-gradient-to-r from-amber-500 to-orange-500'}`}>
           <div className="flex items-center justify-between text-white">
-            <div>
-              <p className="text-sm opacity-90 mb-1">Assessment Complete</p>
-              <h2 className="text-2xl font-bold">{coursetitle}</h2>
+            <div className="min-w-0 flex-1">
+              <p className="text-xs sm:text-sm opacity-90 mb-1">Assessment Complete</p>
+              <h2 className="text-lg sm:text-2xl font-bold truncate">{coursetitle}</h2>
             </div>
-            <div className="text-right">
-              <p className="text-sm opacity-90 mb-1">Final Score</p>
-              <p className="text-3xl font-bold">{percentage}%</p>
+            <div className="text-right ml-4">
+              <p className="text-xs sm:text-sm opacity-90 mb-1">Final Score</p>
+              <p className="text-2xl sm:text-3xl font-bold">{percentage}%</p>
             </div>
           </div>
         </div>
 
-        <div className="p-8">
-          <div className="flex items-center justify-center mb-8">
-            <div className={`w-32 h-32 rounded-full flex items-center justify-center ${
+        <div className="p-4 sm:p-8">
+          <div className="flex items-center justify-center mb-6 sm:mb-8">
+            <div className={`w-24 h-24 sm:w-32 sm:h-32 rounded-full flex items-center justify-center ${
               passed ? 'bg-emerald-50 border-4 border-emerald-200' : 'bg-amber-50 border-4 border-amber-200'
             }`}>
               {passed ? (
-                <svg className="w-16 h-16 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg className="w-12 h-12 sm:w-16 sm:h-16 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
               ) : (
-                <svg className="w-16 h-16 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg className="w-12 h-12 sm:w-16 sm:h-16 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
               )}
             </div>
           </div>
 
-          <div className="text-center mb-8">
-            <h3 className="text-2xl font-bold text-slate-900 mb-2">
+          <div className="text-center mb-6 sm:mb-8">
+            <h3 className="text-xl sm:text-2xl font-bold text-slate-900 mb-2">
               {passed ? 'Congratulations!' : 'Keep Learning!'}
             </h3>
-            <p className="text-slate-600 max-w-md mx-auto">
+            <p className="text-sm sm:text-base text-slate-600 max-w-md mx-auto">
               {passed
                 ? 'You have demonstrated strong understanding of this material. Great work!'
                 : 'Review the material and try again. You need 70% to pass this assessment.'}
             </p>
           </div>
 
-          <div className="grid grid-cols-4 gap-4 mb-8">
-            <div className="bg-slate-50 rounded-xl p-4 text-center">
-              <p className="text-2xl font-bold text-slate-900">{finalscore}/{questions.length}</p>
-              <p className="text-xs text-slate-500 mt-1">Correct Answers</p>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 mb-6 sm:mb-8">
+            <div className="bg-slate-50 rounded-xl p-3 sm:p-4 text-center">
+              <p className="text-lg sm:text-2xl font-bold text-slate-900">{finalscore}/{questions.length}</p>
+              <p className="text-[10px] sm:text-xs text-slate-500 mt-1">Correct</p>
             </div>
-            <div className="bg-slate-50 rounded-xl p-4 text-center">
-              <p className="text-2xl font-bold text-slate-900">{percentage}%</p>
-              <p className="text-xs text-slate-500 mt-1">Score</p>
+            <div className="bg-slate-50 rounded-xl p-3 sm:p-4 text-center">
+              <p className="text-lg sm:text-2xl font-bold text-slate-900">{percentage}%</p>
+              <p className="text-[10px] sm:text-xs text-slate-500 mt-1">Score</p>
             </div>
-            <div className="bg-slate-50 rounded-xl p-4 text-center">
-              <p className="text-2xl font-bold text-slate-900">{formattime(timeelapsed)}</p>
-              <p className="text-xs text-slate-500 mt-1">Total Time</p>
+            <div className="bg-slate-50 rounded-xl p-3 sm:p-4 text-center">
+              <p className="text-lg sm:text-2xl font-bold text-slate-900">{formattime(timeelapsed)}</p>
+              <p className="text-[10px] sm:text-xs text-slate-500 mt-1">Time</p>
             </div>
-            <div className="bg-slate-50 rounded-xl p-4 text-center">
-              <p className="text-2xl font-bold text-slate-900">{avgtime}s</p>
-              <p className="text-xs text-slate-500 mt-1">Avg per Question</p>
+            <div className="bg-slate-50 rounded-xl p-3 sm:p-4 text-center">
+              <p className="text-lg sm:text-2xl font-bold text-slate-900">{avgtime}s</p>
+              <p className="text-[10px] sm:text-xs text-slate-500 mt-1">Avg/Q</p>
             </div>
           </div>
 
@@ -169,9 +169,9 @@ export default function Quiz({ questions = [], onComplete, coursetitle = 'Assess
 
           {passed && (
             <div className="border-t border-slate-200 pt-6 mt-6">
-              <div className="flex items-center justify-between p-4 bg-slate-900 rounded-xl">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-4 bg-slate-900 rounded-xl">
                 <div className="flex items-center gap-3">
-                  <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-6 h-6 text-white shrink-0" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
                   </svg>
                   <div>
@@ -182,14 +182,14 @@ export default function Quiz({ questions = [], onComplete, coursetitle = 'Assess
                 {githubconnected ? (
                   <Link
                     to="/profile?tab=github"
-                    className="px-4 py-2 bg-white text-slate-900 rounded-lg text-sm font-medium hover:bg-slate-100 transition-colors"
+                    className="w-full sm:w-auto text-center px-4 py-2 bg-white text-slate-900 rounded-lg text-sm font-medium hover:bg-slate-100 transition-colors"
                   >
                     Share on GitHub
                   </Link>
                 ) : (
                   <button
                     onClick={connectgithubforrepos}
-                    className="px-4 py-2 bg-white text-slate-900 rounded-lg text-sm font-medium hover:bg-slate-100 transition-colors"
+                    className="w-full sm:w-auto px-4 py-2 bg-white text-slate-900 rounded-lg text-sm font-medium hover:bg-slate-100 transition-colors"
                   >
                     Connect GitHub
                   </button>
@@ -208,20 +208,20 @@ export default function Quiz({ questions = [], onComplete, coursetitle = 'Assess
 
   return (
     <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm">
-      <div className="bg-gradient-to-r from-slate-800 to-slate-900 px-6 py-4">
+      <div className="bg-gradient-to-r from-slate-800 to-slate-900 px-4 sm:px-6 py-3 sm:py-4">
         <div className="flex items-center justify-between text-white">
-          <div>
-            <p className="text-xs text-slate-400 mb-0.5">Assessment</p>
-            <h2 className="font-semibold">{coursetitle}</h2>
+          <div className="min-w-0 flex-1">
+            <p className="text-[10px] sm:text-xs text-slate-400 mb-0.5">Assessment</p>
+            <h2 className="font-semibold text-sm sm:text-base truncate">{coursetitle}</h2>
           </div>
-          <div className="flex items-center gap-6">
+          <div className="flex items-center gap-3 sm:gap-6 ml-2">
             <div className="text-right">
-              <p className="text-xs text-slate-400 mb-0.5">Time</p>
-              <p className="font-mono text-lg">{formattime(timeelapsed)}</p>
+              <p className="text-[10px] sm:text-xs text-slate-400 mb-0.5">Time</p>
+              <p className="font-mono text-sm sm:text-lg">{formattime(timeelapsed)}</p>
             </div>
             <div className="text-right">
-              <p className="text-xs text-slate-400 mb-0.5">Progress</p>
-              <p className="font-mono text-lg">{currentidx + 1}/{questions.length}</p>
+              <p className="text-[10px] sm:text-xs text-slate-400 mb-0.5">Progress</p>
+              <p className="font-mono text-sm sm:text-lg">{currentidx + 1}/{questions.length}</p>
             </div>
           </div>
         </div>
@@ -234,18 +234,18 @@ export default function Quiz({ questions = [], onComplete, coursetitle = 'Assess
         />
       </div>
 
-      <div className="p-8">
-        <div className="flex items-start gap-4 mb-6">
-          <div className="w-10 h-10 bg-slate-100 rounded-xl flex items-center justify-center flex-shrink-0">
-            <span className="font-bold text-slate-700">{currentidx + 1}</span>
+      <div className="p-4 sm:p-8">
+        <div className="flex items-start gap-3 sm:gap-4 mb-4 sm:mb-6">
+          <div className="w-8 h-8 sm:w-10 sm:h-10 bg-slate-100 rounded-xl flex items-center justify-center flex-shrink-0">
+            <span className="font-bold text-slate-700 text-sm sm:text-base">{currentidx + 1}</span>
           </div>
-          <div className="flex-1">
-            <div className="flex items-center gap-2 mb-2">
-              <span className="text-xs font-medium text-slate-500 uppercase tracking-wide">
+          <div className="flex-1 min-w-0">
+            <div className="flex flex-wrap items-center gap-2 mb-2">
+              <span className="text-[10px] sm:text-xs font-medium text-slate-500 uppercase tracking-wide">
                 Question {currentidx + 1} of {questions.length}
               </span>
               {current.difficulty && (
-                <span className={`text-xs px-2 py-0.5 rounded-full ${
+                <span className={`text-[10px] sm:text-xs px-2 py-0.5 rounded-full ${
                   current.difficulty === 'easy' ? 'bg-green-100 text-green-700' :
                   current.difficulty === 'medium' ? 'bg-amber-100 text-amber-700' :
                   'bg-red-100 text-red-700'
@@ -254,11 +254,11 @@ export default function Quiz({ questions = [], onComplete, coursetitle = 'Assess
                 </span>
               )}
             </div>
-            <h3 className="text-xl font-semibold text-slate-900 leading-relaxed">{current.question}</h3>
+            <h3 className="text-base sm:text-xl font-semibold text-slate-900 leading-relaxed">{current.question}</h3>
           </div>
         </div>
 
-        <div className="space-y-3 mb-8">
+        <div className="space-y-2 sm:space-y-3 mb-6 sm:mb-8">
           {current.options.map((option, idx) => {
             let styles = 'border-slate-200 hover:border-slate-300 hover:bg-slate-50'
             let labelstyles = 'bg-slate-100 text-slate-600'
@@ -284,21 +284,21 @@ export default function Quiz({ questions = [], onComplete, coursetitle = 'Assess
                 key={idx}
                 onClick={() => handleselect(idx)}
                 disabled={showresult}
-                className={`w-full text-left p-4 rounded-xl border-2 transition-all duration-200 flex items-center gap-4 ${styles} ${
+                className={`w-full text-left p-3 sm:p-4 rounded-xl border-2 transition-all duration-200 flex items-center gap-3 sm:gap-4 ${styles} ${
                   showresult ? 'cursor-default' : 'cursor-pointer'
                 }`}
               >
-                <div className={`w-9 h-9 rounded-lg flex items-center justify-center font-bold text-sm transition-colors ${labelstyles}`}>
+                <div className={`w-7 h-7 sm:w-9 sm:h-9 rounded-lg flex items-center justify-center font-bold text-xs sm:text-sm transition-colors shrink-0 ${labelstyles}`}>
                   {optionlabels[idx]}
                 </div>
-                <span className="flex-1 text-slate-700 font-medium">{option}</span>
+                <span className="flex-1 text-sm sm:text-base text-slate-700 font-medium">{option}</span>
                 {iconstyles === 'correct' && (
-                  <svg className="w-6 h-6 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <svg className="w-5 h-5 sm:w-6 sm:h-6 text-emerald-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                   </svg>
                 )}
                 {iconstyles === 'incorrect' && (
-                  <svg className="w-6 h-6 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <svg className="w-5 h-5 sm:w-6 sm:h-6 text-red-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                   </svg>
                 )}
@@ -308,54 +308,59 @@ export default function Quiz({ questions = [], onComplete, coursetitle = 'Assess
         </div>
 
         {showresult && current.explanation && (
-          <div className="mb-8 p-5 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl border border-blue-100">
+          <div className="mb-6 sm:mb-8 p-4 sm:p-5 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl border border-blue-100">
             <div className="flex items-start gap-3">
-              <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                <svg className="w-4 h-4 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <div className="w-7 h-7 sm:w-8 sm:h-8 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
               </div>
-              <div>
-                <p className="text-sm font-semibold text-blue-900 mb-1">Explanation</p>
-                <p className="text-sm text-blue-800 leading-relaxed">{current.explanation}</p>
+              <div className="min-w-0 flex-1">
+                <p className="text-xs sm:text-sm font-semibold text-blue-900 mb-1">Explanation</p>
+                <p className="text-xs sm:text-sm text-blue-800 leading-relaxed">{current.explanation}</p>
               </div>
             </div>
           </div>
         )}
 
-        <div className="flex items-center justify-between pt-4 border-t border-slate-200">
-          <div className="flex items-center gap-2">
+        <div className="flex items-center justify-between pt-4 border-t border-slate-200 gap-3">
+          <div className="hidden sm:flex items-center gap-2 flex-wrap">
             {questions.map((_, idx) => (
               <div
                 key={idx}
-                className={`w-3 h-3 rounded-full transition-colors ${
+                className={`w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full transition-colors ${
                   idx < currentidx ? 'bg-emerald-500' :
-                  idx === currentidx ? 'bg-emerald-400 ring-4 ring-emerald-100' :
+                  idx === currentidx ? 'bg-emerald-400 ring-2 sm:ring-4 ring-emerald-100' :
                   'bg-slate-200'
                 }`}
               />
             ))}
           </div>
+          <div className="sm:hidden text-xs text-slate-500 font-medium">
+            {currentidx + 1} of {questions.length}
+          </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3">
             {!showresult ? (
               <button
                 onClick={handlesubmit}
                 disabled={selected === null}
-                className="px-8 py-3 bg-emerald-600 text-white rounded-xl font-semibold disabled:opacity-40 disabled:cursor-not-allowed hover:bg-emerald-700 transition-colors flex items-center gap-2"
+                className="px-4 sm:px-8 py-2.5 sm:py-3 bg-emerald-600 text-white rounded-xl text-sm sm:text-base font-semibold disabled:opacity-40 disabled:cursor-not-allowed hover:bg-emerald-700 transition-colors flex items-center gap-2"
               >
-                Submit Answer
-                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <span className="hidden sm:inline">Submit Answer</span>
+                <span className="sm:hidden">Submit</span>
+                <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                 </svg>
               </button>
             ) : (
               <button
                 onClick={handlenext}
-                className="px-8 py-3 bg-emerald-600 text-white rounded-xl font-semibold hover:bg-emerald-700 transition-colors flex items-center gap-2"
+                className="px-4 sm:px-8 py-2.5 sm:py-3 bg-emerald-600 text-white rounded-xl text-sm sm:text-base font-semibold hover:bg-emerald-700 transition-colors flex items-center gap-2"
               >
-                {currentidx < questions.length - 1 ? 'Next Question' : 'View Results'}
-                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <span className="hidden sm:inline">{currentidx < questions.length - 1 ? 'Next Question' : 'View Results'}</span>
+                <span className="sm:hidden">{currentidx < questions.length - 1 ? 'Next' : 'Results'}</span>
+                <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                 </svg>
               </button>

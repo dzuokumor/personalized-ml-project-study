@@ -15,17 +15,17 @@ export default function home() {
 
   return (
     <div className="max-w-6xl mx-auto">
-      <div className="bg-gradient-to-br from-emerald-600 via-emerald-700 to-teal-700 rounded-2xl p-8 mb-8 text-white relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/2" />
-        <div className="absolute bottom-0 left-0 w-48 h-48 bg-white/5 rounded-full translate-y-1/2 -translate-x-1/2" />
+      <div className="bg-gradient-to-br from-emerald-600 via-emerald-700 to-teal-700 rounded-2xl p-4 sm:p-8 mb-6 sm:mb-8 text-white relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-32 sm:w-64 h-32 sm:h-64 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/2" />
+        <div className="absolute bottom-0 left-0 w-24 sm:w-48 h-24 sm:h-48 bg-white/5 rounded-full translate-y-1/2 -translate-x-1/2" />
 
         <div className="relative z-10">
           <div className="flex items-start justify-between">
             <div>
-              <h1 className="text-3xl font-bold mb-2">
+              <h1 className="text-2xl sm:text-3xl font-bold mb-2">
                 {user ? `Welcome back!` : 'Master Machine Learning'}
               </h1>
-              <p className="text-emerald-100 text-lg mb-6 max-w-xl">
+              <p className="text-emerald-100 text-sm sm:text-lg mb-4 sm:mb-6 max-w-xl">
                 {user
                   ? `You're making great progress. Continue your learning journey and unlock new achievements.`
                   : 'From linear regression to transformers. Learn ML fundamentals with intuitive explanations and hands-on code.'}
@@ -55,22 +55,23 @@ export default function home() {
           </div>
 
           {user && (
-            <div className="mt-6 pt-6 border-t border-emerald-500/30 flex flex-wrap gap-6">
+            <div className="mt-4 sm:mt-6 pt-4 sm:pt-6 border-t border-emerald-500/30 grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-6">
               <div>
-                <p className="text-emerald-200 text-sm mb-1">Level</p>
-                <p className="text-2xl font-bold">{currentlevel.level} - {currentlevel.title}</p>
+                <p className="text-emerald-200 text-xs sm:text-sm mb-1">Level</p>
+                <p className="text-lg sm:text-2xl font-bold">{currentlevel.level}</p>
+                <p className="text-xs text-emerald-200 hidden sm:block">{currentlevel.title}</p>
               </div>
               <div>
-                <p className="text-emerald-200 text-sm mb-1">Total XP</p>
-                <p className="text-2xl font-bold">{stats.xp}</p>
+                <p className="text-emerald-200 text-xs sm:text-sm mb-1">Total XP</p>
+                <p className="text-lg sm:text-2xl font-bold">{stats.xp}</p>
               </div>
               <div>
-                <p className="text-emerald-200 text-sm mb-1">Lessons Completed</p>
-                <p className="text-2xl font-bold">{stats.lessonsCompleted}</p>
+                <p className="text-emerald-200 text-xs sm:text-sm mb-1">Lessons</p>
+                <p className="text-lg sm:text-2xl font-bold">{stats.lessonsCompleted}</p>
               </div>
               <div>
-                <p className="text-emerald-200 text-sm mb-1">Current Streak</p>
-                <p className="text-2xl font-bold flex items-center gap-1">
+                <p className="text-emerald-200 text-xs sm:text-sm mb-1">Streak</p>
+                <p className="text-lg sm:text-2xl font-bold flex items-center gap-1">
                   {stats.currentStreak} {stats.currentStreak > 0 && '🔥'}
                 </p>
               </div>
@@ -230,17 +231,17 @@ export default function home() {
         </div>
       </div>
 
-      <div className="bg-gradient-to-r from-slate-800 to-slate-900 rounded-2xl p-8 text-white">
-        <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+      <div className="bg-gradient-to-r from-slate-800 to-slate-900 rounded-2xl p-4 sm:p-8 text-white">
+        <div className="flex flex-col md:flex-row items-center justify-between gap-4 sm:gap-6 text-center md:text-left">
           <div>
-            <h2 className="text-2xl font-bold mb-2">Ready to master ML?</h2>
-            <p className="text-slate-300">
+            <h2 className="text-xl sm:text-2xl font-bold mb-2">Ready to master ML?</h2>
+            <p className="text-slate-300 text-sm sm:text-base">
               Start with the foundations and work your way up to advanced topics like transformers and generative models.
             </p>
           </div>
           <Link
             to="/course/math-for-ml"
-            className="flex-shrink-0 inline-flex items-center gap-2 px-6 py-3 bg-emerald-500 text-white font-medium rounded-xl hover:bg-emerald-600 transition-colors"
+            className="w-full md:w-auto flex-shrink-0 inline-flex items-center justify-center gap-2 px-6 py-3 bg-emerald-500 text-white font-medium rounded-xl hover:bg-emerald-600 transition-colors"
           >
             Begin Your Journey
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
