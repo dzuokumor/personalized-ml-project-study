@@ -160,9 +160,16 @@ def execute_code(code):
     except ImportError:
         pass
 
+    real_import = __builtins__.__import__ if hasattr(__builtins__, '__import__') else __import__
+
     def safe_import(name, globals=None, locals=None, fromlist=(), level=0):
         if name in allowed_modules:
             return allowed_modules[name]
+
+        base_module = name.split('.')[0]
+        if base_module in ['numpy', 'np', 'pandas', 'pd'] + stdlib_modules:
+            return real_import(name, globals, locals, fromlist, level)
+
         raise ImportError(f"Import of '{name}' is not allowed. Allowed: numpy, pandas, math, random, json, datetime, collections, itertools, functools, and other safe stdlib modules")
 
     safe_builtins['__import__'] = safe_import
