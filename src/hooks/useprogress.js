@@ -380,3 +380,119 @@ export function usebookmarks() {
 
   return { bookmarks, addbookmark, removebookmark, isbookmarked }
 }
+
+export function usecodesubmissions() {
+  const { user } = useauth()
+  const [submissions, setsubmissions] = useState({})
+
+  useEffect(() => {
+    if (!user) {
+      const saved = localStorage.getItem('ml-code-submissions')
+      if (saved) {
+        try {
+          setsubmissions(JSON.parse(saved))
+        } catch (e) {
+          setsubmissions({})
+        }
+      }
+      return
+    }
+
+    const fetchsubmissions = async () => {
+      const { data, error } = await supabase
+        .from('code_submissions')
+        .select('id, course_id, lesson_id, code, output, description, created_at')
+        .eq('user_id', user.id)
+        .eq('passed', true)
+        .order('created_at', { ascending: true })
+
+      if (error) {
+        console.error('Error fetching code submissions:', error)
+        return
+      }
+
+      const submissionsmap = {}
+      data.forEach(item => {
+        const key = `${item.course_id}:${item.lesson_id}`
+        if (!submissionsmap[key]) {
+          submissionsmap[key] = []
+        }
+        submissionsmap[key].push({
+          id: item.id,
+          code: item.code,
+          output: item.output,
+          description: item.description,
+          createdat: item.created_at
+        })
+      })
+      setsubmissions(submissionsmap)
+    }
+
+    fetchsubmissions()
+  }, [user])
+
+  const savesubmission = useCallback(async (courseid, lessonid, code, output, lessontitle = '') => {
+    const key = `${courseid}:${lessonid}`
+    const newsubmission = {
+      id: Date.now().toString(),
+      code,
+      output,
+      description: null,
+      createdat: new Date().toISOString()
+    }
+
+    const existing = submissions[key] || []
+    const duplicate = existing.some(s => s.code.trim() === code.trim())
+    if (duplicate) return
+
+    const newsubmissions = {
+      ...submissions,
+      [key]: [...existing, newsubmission]
+    }
+    setsubmissions(newsubmissions)
+
+    if (!user) {
+      localStorage.setItem('ml-code-submissions', JSON.stringify(newsubmissions))
+      return
+    }
+
+    const { error } = await supabase
+      .from('code_submissions')
+      .insert({
+        user_id: user.id,
+        course_id: courseid,
+        lesson_id: lessonid,
+        lesson_title: lessontitle,
+        code,
+        output,
+        passed: true,
+        created_at: new Date().toISOString()
+      })
+
+    if (error) {
+      console.error('Error saving code submission:', error)
+    }
+  }, [user, submissions])
+
+  const getcoursesubmissions = useCallback((courseid) => {
+    const result = []
+    Object.keys(submissions).forEach(key => {
+      if (key.startsWith(`${courseid}:`)) {
+        const lessonid = key.split(':')[1]
+        submissions[key].forEach(sub => {
+          result.push({
+            lessonid,
+            ...sub
+          })
+        })
+      }
+    })
+    return result.sort((a, b) => new Date(a.createdat) - new Date(b.createdat))
+  }, [submissions])
+
+  const getallsubmissions = useCallback(() => {
+    return submissions
+  }, [submissions])
+
+  return { submissions, savesubmission, getcoursesubmissions, getallsubmissions }
+}

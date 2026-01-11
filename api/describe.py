@@ -11,31 +11,30 @@ class handler(BaseHTTPRequestHandler):
 
         try:
             data = json.loads(body)
-            messages = data.get('messages', [])
-            context = data.get('context', '')
+            code = data.get('code', '')
+            lessontitle = data.get('lessontitle', '')
+            coursetitle = data.get('coursetitle', '')
 
-            system_message = """You are an AI tutor helping students learn machine learning.
-You are knowledgeable about all aspects of ML from basic linear regression to advanced deep learning.
-Explain concepts clearly with examples. Use mathematical notation when helpful but always explain it.
-If code is relevant, provide Python examples using common libraries like numpy, scikit-learn, or pytorch.
-Be encouraging but accurate. If you don't know something, say so."""
+            prompt = f"""Generate a single concise comment (max 10 words) describing what this Python code does.
+The code is from a lesson called "{lessontitle}" in the "{coursetitle}" course.
 
-            if context:
-                system_message += f"\n\nCurrent lesson context:\n{context}"
+Code:
+{code}
 
-            filtered_messages = [
-                msg for msg in messages
-                if msg.get('content') and msg.get('content').strip()
-            ]
-            api_messages = [{"role": "system", "content": system_message}] + filtered_messages
+Reply with ONLY the comment text, no # symbol, no quotes, just the description.
+Example responses:
+- Importing libraries for matrix operations
+- Training the linear regression model
+- Calculating mean squared error loss
+- Visualizing the decision boundary"""
 
             api_key = os.environ.get('OPENROUTER_API_KEY', '')
 
             request_data = json.dumps({
-                "model": "meta-llama/llama-3.2-3b-instruct:free",
-                "messages": api_messages,
-                "max_tokens": 1024,
-                "temperature": 0.7
+                "model": "mistralai/mistral-7b-instruct:free",
+                "messages": [{"role": "user", "content": prompt}],
+                "max_tokens": 30,
+                "temperature": 0.2
             }).encode('utf-8')
 
             req = urllib.request.Request(
@@ -49,35 +48,31 @@ Be encouraging but accurate. If you don't know something, say so."""
                 }
             )
 
-            with urllib.request.urlopen(req, timeout=30) as response:
+            with urllib.request.urlopen(req, timeout=15) as response:
                 result = json.loads(response.read().decode('utf-8'))
 
-            assistant_message = result['choices'][0]['message']['content']
+            description = result['choices'][0]['message']['content'].strip()
+            description = description.replace('#', '').strip()
+            if description.startswith('"') and description.endswith('"'):
+                description = description[1:-1]
+            if description.startswith("'") and description.endswith("'"):
+                description = description[1:-1]
 
             self.send_response(200)
             self.send_header('Content-Type', 'application/json')
             self.send_header('Access-Control-Allow-Origin', '*')
             self.end_headers()
             self.wfile.write(json.dumps({
-                'content': assistant_message
+                'description': description
             }).encode('utf-8'))
 
-        except urllib.error.HTTPError as e:
-            error_body = e.read().decode('utf-8')
-            self.send_response(e.code)
-            self.send_header('Content-Type', 'application/json')
-            self.send_header('Access-Control-Allow-Origin', '*')
-            self.end_headers()
-            self.wfile.write(json.dumps({
-                'error': f'API error: {error_body}'
-            }).encode('utf-8'))
         except Exception as e:
-            self.send_response(500)
+            self.send_response(200)
             self.send_header('Content-Type', 'application/json')
             self.send_header('Access-Control-Allow-Origin', '*')
             self.end_headers()
             self.wfile.write(json.dumps({
-                'error': str(e)
+                'description': 'Code execution from course lesson'
             }).encode('utf-8'))
 
     def do_OPTIONS(self):

@@ -1,18 +1,51 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useauth } from '../../contexts/authcontext'
-import { createrepo, generateprojectreadme } from '../../services/github'
+import { usecodesubmissions } from '../../hooks/useprogress'
+import { createrepo } from '../../services/github'
+import { allcourses } from '../../data/courses'
 
 export default function publishmodal({ course, onclose }) {
-  const { githubtoken, githubconnected, connectgithubforrepos } = useauth()
+  const { githubtoken, connectgithubforrepos } = useauth()
+  const { getcoursesubmissions } = usecodesubmissions()
   const [reponame, setreponame] = useState(course?.title?.toLowerCase().replace(/[^a-z0-9]+/g, '-') || 'ml-project')
   const [description, setdescription] = useState(course?.description || '')
   const [isprivate, setisprivate] = useState(false)
   const [publishing, setpublishing] = useState(false)
+  const [generating, setgenerating] = useState(false)
   const [success, setsuccess] = useState(null)
   const [error, seterror] = useState(null)
+  const [codeblocks, setcodeblocks] = useState([])
+  const [progress, setprogress] = useState('')
+
+  const coursedata = allcourses.find(c => c.id === course?.id)
+
+  useEffect(() => {
+    if (course?.id) {
+      const submissions = getcoursesubmissions(course.id)
+      setcodeblocks(submissions)
+    }
+  }, [course?.id, getcoursesubmissions])
 
   const handleconnect = async () => {
     await connectgithubforrepos()
+  }
+
+  const generatedescription = async (code, lessontitle) => {
+    try {
+      const response = await fetch('/api/describe', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          code,
+          lessontitle,
+          coursetitle: course?.title || 'ML Course'
+        })
+      })
+      const data = await response.json()
+      return data.description || 'Code from course lesson'
+    } catch {
+      return 'Code from course lesson'
+    }
   }
 
   const handlepublish = async () => {
@@ -22,26 +55,41 @@ export default function publishmodal({ course, onclose }) {
     }
 
     setpublishing(true)
+    setgenerating(true)
     seterror(null)
+    setprogress('Generating code descriptions...')
 
-    const samplecode = course?.lessons?.[0]?.startercode || '# ML Project\nprint("Hello ML!")'
-    const readme = generateprojectreadme({
-      coursename: course?.title || 'ML Course',
-      lessonname: course?.title || 'ML Project',
-      description: course?.description || '',
-      code: samplecode
-    })
+    const describedblocks = []
+    for (let i = 0; i < codeblocks.length; i++) {
+      const block = codeblocks[i]
+      const lesson = coursedata?.lessons?.find(l => l.id === block.lessonid)
+      setprogress(`Describing code ${i + 1} of ${codeblocks.length}...`)
+
+      const desc = await generatedescription(block.code, lesson?.title || 'Lesson')
+      describedblocks.push({
+        ...block,
+        description: desc,
+        lessontitle: lesson?.title || 'Lesson'
+      })
+    }
+
+    setgenerating(false)
+    setprogress('Creating repository...')
+
+    const maincode = generateprojectcode(describedblocks, course?.title)
+    const readme = generatereadme(course, describedblocks)
 
     const result = await createrepo({
       token: githubtoken,
       reponame,
       description,
-      code: samplecode,
+      code: maincode,
       readme,
       isprivate
     })
 
     setpublishing(false)
+    setprogress('')
 
     if (result.error) {
       seterror(result.error)
@@ -50,6 +98,79 @@ export default function publishmodal({ course, onclose }) {
     } else {
       seterror('Failed to create repository')
     }
+  }
+
+  const generateprojectcode = (blocks, coursetitle) => {
+    if (blocks.length === 0) {
+      return `# ${coursetitle || 'ML Project'}
+# Completed on Neuron ML Learning Platform
+
+print("Hello ML!")
+`
+    }
+
+    let code = `"""
+${coursetitle || 'ML Project'}
+Completed on Neuron ML Learning Platform
+https://personalized-ml-project-study.vercel.app
+"""
+
+`
+    let currentlesson = ''
+
+    blocks.forEach((block, idx) => {
+      if (block.lessontitle !== currentlesson) {
+        currentlesson = block.lessontitle
+        code += `\n# === ${currentlesson} ===\n\n`
+      }
+
+      code += `# ${block.description}\n`
+      code += block.code.trim()
+      code += '\n\n'
+    })
+
+    return code.trim() + '\n'
+  }
+
+  const generatereadme = (course, blocks) => {
+    const lessonset = new Set(blocks.map(b => b.lessontitle))
+    const lessonlist = Array.from(lessonset)
+
+    return `# ${course?.title || 'ML Project'}
+
+> Completed on [Neuron ML Learning Platform](https://personalized-ml-project-study.vercel.app)
+
+## Overview
+
+${course?.description || 'A machine learning project demonstrating practical ML skills.'}
+
+## Lessons Covered
+
+${lessonlist.map(l => `- ${l}`).join('\n')}
+
+## Code Highlights
+
+This project contains **${blocks.length} code blocks** executed during the course:
+
+${blocks.slice(0, 5).map(b => `- ${b.description}`).join('\n')}${blocks.length > 5 ? `\n- ...and ${blocks.length - 5} more` : ''}
+
+## How to Run
+
+\`\`\`bash
+python main.py
+\`\`\`
+
+## Requirements
+
+- Python 3.8+
+- NumPy
+- Pandas (optional)
+- Scikit-learn (optional)
+
+---
+
+*Built with [Neuron](https://personalized-ml-project-study.vercel.app) - Learn ML by building real projects*
+`
   }
 
   return (
@@ -78,7 +199,7 @@ export default function publishmodal({ course, onclose }) {
                 </svg>
               </div>
               <h3 className="text-base sm:text-lg font-semibold text-slate-900 mb-2">Repository Created!</h3>
-              <p className="text-sm sm:text-base text-slate-500 mb-4">Your project has been published to GitHub.</p>
+              <p className="text-sm sm:text-base text-slate-500 mb-4">Your project with {codeblocks.length} code blocks has been published.</p>
               <a
                 href={success}
                 target="_blank"
@@ -117,6 +238,20 @@ export default function publishmodal({ course, onclose }) {
                   <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
                 </svg>
                 <span className="text-xs sm:text-sm text-emerald-700">GitHub connected</span>
+              </div>
+
+              <div className="p-3 bg-slate-50 rounded-lg border border-slate-200">
+                <div className="flex items-center gap-2 mb-2">
+                  <svg className="w-4 h-4 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
+                  </svg>
+                  <span className="text-sm font-medium text-slate-700">Code to Publish</span>
+                </div>
+                <p className="text-xs text-slate-500">
+                  {codeblocks.length > 0
+                    ? `${codeblocks.length} code blocks from your learning sessions will be included with AI-generated descriptions.`
+                    : 'No code blocks found. Run some code in the lessons first!'}
+                </p>
               </div>
 
               <div>
@@ -158,9 +293,19 @@ export default function publishmodal({ course, onclose }) {
                 </div>
               )}
 
+              {progress && (
+                <div className="p-2.5 sm:p-3 bg-blue-50 text-blue-600 rounded-lg text-xs sm:text-sm flex items-center gap-2">
+                  <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"/>
+                  </svg>
+                  {progress}
+                </div>
+              )}
+
               <button
                 onClick={handlepublish}
-                disabled={publishing || !reponame}
+                disabled={publishing || !reponame || codeblocks.length === 0}
                 className="w-full py-2.5 sm:py-3 bg-emerald-600 text-white text-sm sm:text-base rounded-xl font-medium hover:bg-emerald-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
               >
                 {publishing ? (
@@ -169,7 +314,7 @@ export default function publishmodal({ course, onclose }) {
                       <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
                       <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"/>
                     </svg>
-                    Publishing...
+                    {generating ? 'Generating Descriptions...' : 'Publishing...'}
                   </>
                 ) : (
                   <>
@@ -180,6 +325,12 @@ export default function publishmodal({ course, onclose }) {
                   </>
                 )}
               </button>
+
+              {codeblocks.length === 0 && (
+                <p className="text-xs text-center text-slate-400">
+                  Complete some lessons and run code to have something to publish!
+                </p>
+              )}
             </div>
           )}
         </div>
