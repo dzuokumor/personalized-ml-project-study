@@ -64,7 +64,7 @@ export default function chatwidget({ context = '' }) {
     <>
       <button
         onClick={() => setisopen(!isopen)}
-        className="fixed bottom-6 right-6 w-14 h-14 btn-primary text-white rounded-full hover:scale-105 transition-all flex items-center justify-center z-50 glow-emerald"
+        className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 w-12 h-12 sm:w-14 sm:h-14 btn-primary text-white rounded-full hover:scale-105 transition-all flex items-center justify-center z-50 glow-emerald"
       >
         {isopen ? (
           <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -78,7 +78,7 @@ export default function chatwidget({ context = '' }) {
       </button>
 
       {isopen && (
-        <div className="fixed bottom-24 right-6 w-96 h-[500px] glass-card rounded-2xl flex flex-col z-50 overflow-hidden shadow-2xl">
+        <div className="fixed bottom-20 sm:bottom-24 right-2 sm:right-6 left-2 sm:left-auto sm:w-96 h-[70vh] sm:h-[500px] glass-card rounded-2xl flex flex-col z-50 overflow-hidden shadow-2xl">
           <div className="px-4 py-3 bg-gradient-to-r from-emerald-600 to-teal-600 text-white flex items-center justify-between">
             <div className="flex items-center gap-2">
               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">

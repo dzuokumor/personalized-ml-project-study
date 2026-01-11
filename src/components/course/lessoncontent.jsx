@@ -2,7 +2,7 @@ import CodeBlock from './codeblock'
 
 export default function lessoncontent({ content }) {
   return (
-    <div className="prose prose-slate max-w-none">
+    <div className="prose prose-slate max-w-none w-full overflow-x-hidden">
       {content.map((block, idx) => {
         switch (block.type) {
           case 'heading':

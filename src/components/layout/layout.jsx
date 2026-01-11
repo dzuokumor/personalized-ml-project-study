@@ -7,7 +7,7 @@ export default function layout() {
   const [sidebaropen, setsidebaropen] = useState(false)
 
   return (
-    <div className="min-h-screen dotted-bg flex">
+    <div className="min-h-screen dotted-bg flex w-full max-w-full overflow-x-hidden">
       <div className="neural-pattern" />
       <div className="noise-overlay" />
 
@@ -20,9 +20,9 @@ export default function layout() {
 
       <Sidebar isopen={sidebaropen} onclose={() => setsidebaropen(false)} />
 
-      <div className="flex-1 flex flex-col lg:ml-72">
+      <div className="flex-1 flex flex-col lg:ml-72 min-w-0 w-full max-w-full">
         <Header onmenuclick={() => setsidebaropen(true)} />
-        <main className="flex-1 p-4 md:p-8 relative z-10">
+        <main className="flex-1 p-4 md:p-8 relative z-10 w-full max-w-full overflow-x-hidden">
           <Outlet />
         </main>
       </div>

@@ -163,13 +163,15 @@ export default function lesson() {
       </div>
 
       <div className="glass-card rounded-xl p-4 sm:p-8 mb-4 sm:mb-6">
-        <div className="flex flex-wrap items-center gap-2 mb-3 sm:mb-4">
-          {lesson.concepts.map((concept, idx) => (
-            <span key={idx} className="text-xs bg-emerald-100 text-emerald-700 px-2 py-1 rounded-full">
-              {concept}
-            </span>
-          ))}
-        </div>
+        {lesson.concepts && lesson.concepts.length > 0 && (
+          <div className="flex flex-wrap items-center gap-2 mb-3 sm:mb-4">
+            {lesson.concepts.map((concept, idx) => (
+              <span key={idx} className="text-xs bg-emerald-100 text-emerald-700 px-2 py-1 rounded-full">
+                {concept}
+              </span>
+            ))}
+          </div>
+        )}
 
         <h1 className="text-xl sm:text-3xl font-bold text-slate-900 mb-2">{lesson.title}</h1>
         <p className="text-sm sm:text-base text-slate-500">{lesson.duration}</p>

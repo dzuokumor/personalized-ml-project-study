@@ -20,32 +20,35 @@ export default function CodeBlock({ code, language = 'python', filename = null, 
   }
 
   return (
-    <div className="my-6 rounded-lg overflow-hidden border border-slate-200">
+    <div className="my-6 rounded-lg overflow-hidden border border-slate-200 max-w-full">
       {(filename || fromproject) && (
         <div className="bg-slate-800 px-4 py-2 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="flex gap-1.5">
+          <div className="flex items-center gap-2 min-w-0">
+            <div className="flex gap-1.5 shrink-0">
               <div className="w-3 h-3 rounded-full bg-red-500"></div>
               <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
               <div className="w-3 h-3 rounded-full bg-green-500"></div>
             </div>
             {filename && (
-              <span className="text-slate-400 text-xs font-mono ml-3">{filename}</span>
+              <span className="text-slate-400 text-xs font-mono ml-3 truncate">{filename}</span>
             )}
           </div>
           {fromproject && (
-            <span className="text-xs text-slate-500">from: {fromproject}</span>
+            <span className="text-xs text-slate-500 shrink-0">from: {fromproject}</span>
           )}
         </div>
       )}
-      <SyntaxHighlighter
-        language={language}
-        style={customstyle}
-        showLineNumbers
-        wrapLines
-      >
-        {code.trim()}
-      </SyntaxHighlighter>
+      <div className="overflow-x-auto">
+        <SyntaxHighlighter
+          language={language}
+          style={customstyle}
+          showLineNumbers
+          wrapLines
+          wrapLongLines
+        >
+          {code.trim()}
+        </SyntaxHighlighter>
+      </div>
     </div>
   )
 }
