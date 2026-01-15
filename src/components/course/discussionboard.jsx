@@ -130,7 +130,7 @@ export default function discussionboard({ courseid, lessonid, lessontitle }) {
   const fetchposts = async () => {
     const { data, error } = await supabase
       .from('discussions')
-      .select('id, content, created_at, updated_at, user_id, parent_id')
+      .select('id, content, created_at, user_id, parent_id')
       .eq('course_id', courseid)
       .eq('lesson_id', lessonid)
       .order('created_at', { ascending: false })
@@ -251,7 +251,7 @@ export default function discussionboard({ courseid, lessonid, lessontitle }) {
     setposting(true)
     const { error } = await supabase
       .from('discussions')
-      .update({ content: edittext.trim(), updated_at: new Date().toISOString() })
+      .update({ content: edittext.trim() })
       .eq('id', postid)
       .eq('user_id', user.id)
 
@@ -373,9 +373,6 @@ export default function discussionboard({ courseid, lessonid, lessontitle }) {
                       <div className="flex items-center gap-2 mb-1">
                         <span className="font-medium text-white text-sm">{post.user_stats?.username || 'Anonymous'}</span>
                         <span className="text-slate-500 text-xs font-mono">{formatdate(post.created_at)}</span>
-                        {post.updated_at && post.updated_at !== post.created_at && (
-                          <span className="text-slate-500 text-[10px] italic">(edited)</span>
-                        )}
                       </div>
                       {editing === post.id ? (
                         <div className="mt-2">
@@ -488,9 +485,6 @@ export default function discussionboard({ courseid, lessonid, lessontitle }) {
                             <div className="flex items-center gap-2 mb-0.5">
                               <span className="font-medium text-slate-300 text-xs">{reply.user_stats?.username || 'Anonymous'}</span>
                               <span className="text-slate-500 text-[10px] font-mono">{formatdate(reply.created_at)}</span>
-                              {reply.updated_at && reply.updated_at !== reply.created_at && (
-                                <span className="text-slate-500 text-[10px] italic">(edited)</span>
-                              )}
                               {user && reply.user_id === user.id && editing !== reply.id && (
                                 <button
                                   onClick={() => startedit(reply.id, reply.content)}

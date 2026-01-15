@@ -1,8 +1,9 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { useauth } from '../contexts/authcontext'
 import { usestats } from '../hooks/usestats'
 import { supabase } from '../lib/supabase'
 import { getoptimizedurl } from '../services/cloudinary'
+import Neuroncrown from '../components/leaderboard/neuroncrown'
 
 export default function leaderboard() {
   const { user, avatar } = useauth()
@@ -18,8 +19,6 @@ export default function leaderboard() {
         .select('user_id, username, fullname, xp, level, avatar_url')
         .order('xp', { ascending: false })
         .limit(100)
-
-      console.log('Leaderboard fetch result:', { data, error })
 
       if (error) {
         console.error('Error fetching leaderboard:', error)
@@ -63,11 +62,6 @@ export default function leaderboard() {
   const rest = leaders.slice(3, 10)
   const showall = leaders.length < 3
 
-  const podiumorder = [1, 0, 2]
-  const podiumheights = ['h-28', 'h-36', 'h-24']
-  const podiumcolors = ['from-slate-400 to-slate-500', 'from-amber-400 to-yellow-500', 'from-amber-600 to-amber-700']
-  const badgecolors = ['bg-slate-400', 'bg-amber-400', 'bg-amber-600']
-
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
@@ -79,24 +73,25 @@ export default function leaderboard() {
   return (
     <div className="max-w-4xl mx-auto">
       <div className="relative bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 rounded-2xl p-6 sm:p-8 mb-8 overflow-hidden">
-        <div className="absolute inset-0 opacity-30">
-          <svg className="w-full h-full" viewBox="0 0 400 200" preserveAspectRatio="none">
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <svg className="w-full h-full opacity-20" viewBox="0 0 400 200" preserveAspectRatio="xMidYMid slice">
             <defs>
               <linearGradient id="neuralLeaderGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stopColor="#10b981" stopOpacity="0.6" />
-                <stop offset="50%" stopColor="#06b6d4" stopOpacity="0.3" />
-                <stop offset="100%" stopColor="#10b981" stopOpacity="0.6" />
+                <stop offset="0%" stopColor="#10b981" stopOpacity="0.8" />
+                <stop offset="50%" stopColor="#06b6d4" stopOpacity="0.4" />
+                <stop offset="100%" stopColor="#10b981" stopOpacity="0.8" />
               </linearGradient>
             </defs>
-            <path d="M0,100 Q50,50 100,80 T200,60 T300,90 T400,70" stroke="url(#neuralLeaderGrad)" strokeWidth="1" fill="none" />
-            <path d="M0,150 Q80,100 160,130 T320,110 T400,140" stroke="url(#neuralLeaderGrad)" strokeWidth="0.8" fill="none" opacity="0.6" />
-            <circle cx="50" cy="80" r="3" fill="#10b981" opacity="0.8" />
-            <circle cx="150" cy="60" r="2" fill="#06b6d4" opacity="0.6" />
-            <circle cx="250" cy="90" r="3" fill="#10b981" opacity="0.7" />
-            <circle cx="350" cy="70" r="2" fill="#06b6d4" opacity="0.5" />
-            <circle cx="100" cy="130" r="2" fill="#10b981" opacity="0.5" />
-            <circle cx="200" cy="110" r="3" fill="#06b6d4" opacity="0.6" />
-            <circle cx="300" cy="120" r="2" fill="#10b981" opacity="0.4" />
+            <g className="animate-pulse" style={{ animationDuration: '4s' }}>
+              <path d="M0,100 Q50,50 100,80 T200,60 T300,90 T400,70" stroke="url(#neuralLeaderGrad)" strokeWidth="1.5" fill="none" />
+              <path d="M0,150 Q80,100 160,130 T320,110 T400,140" stroke="url(#neuralLeaderGrad)" strokeWidth="1" fill="none" opacity="0.6" />
+            </g>
+            <g className="animate-pulse" style={{ animationDuration: '3s' }}>
+              <circle cx="50" cy="80" r="4" fill="#10b981" />
+              <circle cx="150" cy="60" r="3" fill="#06b6d4" />
+              <circle cx="250" cy="90" r="4" fill="#10b981" />
+              <circle cx="350" cy="70" r="3" fill="#06b6d4" />
+            </g>
           </svg>
         </div>
 
@@ -160,44 +155,101 @@ export default function leaderboard() {
       )}
 
       {top3.length >= 3 && (
-        <div className="mb-8">
-          <div className="flex items-end justify-center gap-4 sm:gap-6">
-            {podiumorder.map((idx, pos) => {
+        <div className="relative bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 rounded-2xl p-6 sm:p-8 mb-8 overflow-hidden border border-slate-700/50">
+          <div className="absolute inset-0 overflow-hidden pointer-events-none">
+            <svg className="w-full h-full opacity-10" viewBox="0 0 400 300" preserveAspectRatio="xMidYMid slice">
+              <defs>
+                <linearGradient id="podiumGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stopColor="#10b981" />
+                  <stop offset="100%" stopColor="#06b6d4" />
+                </linearGradient>
+              </defs>
+              <g className="animate-pulse" style={{ animationDuration: '5s' }}>
+                <line x1="20" y1="20" x2="100" y2="60" stroke="url(#podiumGrad)" strokeWidth="0.5" />
+                <line x1="100" y1="60" x2="200" y2="40" stroke="url(#podiumGrad)" strokeWidth="0.5" />
+                <line x1="200" y1="40" x2="300" y2="70" stroke="url(#podiumGrad)" strokeWidth="0.5" />
+                <line x1="300" y1="70" x2="380" y2="30" stroke="url(#podiumGrad)" strokeWidth="0.5" />
+                <circle cx="20" cy="20" r="3" fill="#10b981" />
+                <circle cx="100" cy="60" r="4" fill="#06b6d4" />
+                <circle cx="200" cy="40" r="5" fill="#10b981" />
+                <circle cx="300" cy="70" r="4" fill="#06b6d4" />
+                <circle cx="380" cy="30" r="3" fill="#10b981" />
+              </g>
+            </svg>
+          </div>
+
+          <div className="relative flex items-end justify-center gap-2 sm:gap-4 pt-4">
+            {[1, 0, 2].map((idx, pos) => {
               const leader = top3[idx]
               if (!leader) return null
+
+              const podiumheight = idx === 0 ? 'h-32 sm:h-40' : idx === 1 ? 'h-24 sm:h-28' : 'h-20 sm:h-24'
+              const podiumcolor = idx === 0
+                ? 'from-amber-400 via-yellow-500 to-amber-600'
+                : idx === 1
+                  ? 'from-slate-300 via-slate-400 to-slate-500'
+                  : 'from-amber-600 via-amber-700 to-amber-800'
+              const bordercolor = idx === 0 ? 'border-amber-400' : idx === 1 ? 'border-slate-400' : 'border-amber-600'
+              const glowcolor = idx === 0 ? 'shadow-amber-500/30' : idx === 1 ? 'shadow-slate-400/20' : 'shadow-amber-700/20'
+
               return (
                 <div key={leader.user_id} className="flex flex-col items-center">
-                  <div className="relative mb-3">
-                    <div className={`w-16 h-16 sm:w-20 sm:h-20 rounded-xl border-2 ${idx === 0 ? 'border-amber-400' : idx === 1 ? 'border-slate-400' : 'border-amber-600'} bg-slate-800 overflow-hidden`}>
+                  {idx === 0 && (
+                    <div className="mb-2">
+                      <Suspense fallback={<div className="w-20 h-20 animate-pulse bg-slate-800 rounded-full" />}>
+                        <Neuroncrown />
+                      </Suspense>
+                    </div>
+                  )}
+
+                  <div className={`relative mb-3 ${idx !== 0 ? 'mt-12 sm:mt-16' : ''}`}>
+                    <div className={`w-16 h-16 sm:w-20 sm:h-20 rounded-2xl border-3 ${bordercolor} bg-slate-800 overflow-hidden shadow-lg ${glowcolor} transform hover:scale-105 transition-transform`}>
                       {leader.avatar_url ? (
                         <img src={getoptimizedurl(leader.avatar_url, { width: 160, height: 160 })} alt="" className="w-full h-full object-cover" />
                       ) : (
-                        <div className="w-full h-full bg-gradient-to-br from-slate-700 to-slate-800 flex items-center justify-center text-white font-bold text-lg sm:text-xl">
+                        <div className="w-full h-full bg-gradient-to-br from-slate-700 to-slate-800 flex items-center justify-center text-white font-bold text-xl sm:text-2xl">
                           {leader.username?.[0]?.toUpperCase() || '?'}
                         </div>
                       )}
                     </div>
-                    <div className={`absolute -top-2 -right-2 w-6 h-6 sm:w-7 sm:h-7 ${badgecolors[idx]} rounded-full flex items-center justify-center text-white font-bold text-xs sm:text-sm shadow-lg`}>
+                    <div className={`absolute -bottom-1 -right-1 w-7 h-7 sm:w-8 sm:h-8 bg-gradient-to-br ${podiumcolor} rounded-full flex items-center justify-center text-white font-bold text-sm shadow-lg border-2 border-slate-900`}>
                       {idx + 1}
                     </div>
                   </div>
-                  <p className="text-sm sm:text-base font-semibold text-slate-900 mb-1 text-center truncate max-w-[80px] sm:max-w-[100px]">{leader.username}</p>
-                  <p className="text-xs sm:text-sm text-emerald-600 font-mono font-semibold mb-3">{leader.xp.toLocaleString()} XP</p>
-                  <div className={`w-20 sm:w-24 ${podiumheights[pos]} bg-gradient-to-t ${podiumcolors[idx]} rounded-t-lg flex items-start justify-center pt-3`}>
-                    <span className="text-white font-bold text-lg sm:text-xl">#{idx + 1}</span>
+
+                  <p className="text-sm sm:text-base font-bold text-white mb-1 text-center truncate max-w-[80px] sm:max-w-[100px]">
+                    {leader.username || leader.fullname || 'Anonymous'}
+                  </p>
+                  <p className="text-xs text-slate-400 mb-3 font-mono">Level {leader.level || 1}</p>
+
+                  <div className={`w-20 sm:w-28 ${podiumheight} bg-gradient-to-b ${podiumcolor} rounded-t-xl flex flex-col items-center justify-start pt-3 sm:pt-4 shadow-xl relative overflow-hidden`}>
+                    <div className="absolute inset-0 bg-gradient-to-r from-white/10 via-transparent to-black/10" />
+                    <div className="absolute top-0 left-0 right-0 h-1 bg-white/30" />
+
+                    <span className="text-white/90 font-bold text-2xl sm:text-3xl relative z-10">#{idx + 1}</span>
+                    <span className="text-white/70 font-mono text-xs sm:text-sm mt-1 relative z-10">{(leader.xp || 0).toLocaleString()}</span>
+                    <span className="text-white/50 text-[10px] uppercase tracking-wider relative z-10">XP</span>
+
+                    <div className="absolute bottom-0 left-0 right-0">
+                      <svg className="w-full h-8 opacity-20" viewBox="0 0 100 30">
+                        <path d="M0,15 Q25,5 50,15 T100,15 L100,30 L0,30 Z" fill="currentColor" className="text-black" />
+                      </svg>
+                    </div>
                   </div>
                 </div>
               )
             })}
           </div>
+
+          <div className="absolute bottom-0 left-0 right-0 h-4 bg-gradient-to-t from-slate-950 to-transparent" />
         </div>
       )}
 
       {userrank && userrank.rank > 3 && (
-        <div className="bg-gradient-to-r from-emerald-900 to-cyan-900 rounded-xl p-4 mb-6 border border-emerald-500/30">
+        <div className="bg-gradient-to-r from-emerald-900/80 to-cyan-900/80 rounded-xl p-4 mb-6 border border-emerald-500/30 backdrop-blur-sm">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <div className="w-12 h-12 rounded-xl bg-slate-800 border border-emerald-500/50 overflow-hidden">
+              <div className="w-12 h-12 rounded-xl bg-slate-800 border-2 border-emerald-500/50 overflow-hidden shadow-lg shadow-emerald-500/20">
                 {avatar ? (
                   <img src={getoptimizedurl(avatar, { width: 96, height: 96 })} alt="" className="w-full h-full object-cover" />
                 ) : (
@@ -212,7 +264,7 @@ export default function leaderboard() {
               </div>
             </div>
             <div className="text-right">
-              <p className="text-2xl font-bold text-white font-mono">#{userrank.rank}</p>
+              <p className="text-3xl font-bold text-white font-mono">#{userrank.rank}</p>
               {userrank.xptogap > 0 && (
                 <p className="text-xs text-slate-400">{userrank.xptogap.toLocaleString()} XP to next rank</p>
               )}
@@ -221,74 +273,67 @@ export default function leaderboard() {
         </div>
       )}
 
-      <div className="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 rounded-xl overflow-hidden border border-slate-700/50">
-        <div className="absolute inset-0 opacity-10 pointer-events-none">
-          <svg className="w-full h-full" viewBox="0 0 200 400" preserveAspectRatio="none">
-            <path d="M20,0 L20,400" stroke="#10b981" strokeWidth="0.5" strokeDasharray="4,8" />
-            <path d="M60,0 L60,400" stroke="#06b6d4" strokeWidth="0.3" strokeDasharray="2,12" />
-            <path d="M140,0 L140,400" stroke="#10b981" strokeWidth="0.3" strokeDasharray="2,12" />
-            <path d="M180,0 L180,400" stroke="#06b6d4" strokeWidth="0.5" strokeDasharray="4,8" />
-          </svg>
-        </div>
-
-        <div className="px-4 py-3 border-b border-slate-700/50 bg-slate-800/50">
-          <div className="flex items-center justify-between text-xs text-slate-400 font-mono uppercase tracking-wider">
-            <span>Rank</span>
-            <span>Learner</span>
-            <span>XP</span>
-          </div>
-        </div>
-
-        <div className="divide-y divide-slate-700/30">
-          {rest.map((leader, idx) => {
-            const rank = idx + 4
-            const isuser = user && leader.user_id === user.id
-            return (
-              <div
-                key={leader.user_id}
-                className={`flex items-center justify-between px-4 py-3 transition-colors ${isuser ? 'bg-emerald-900/20' : 'hover:bg-slate-800/50'}`}
-              >
-                <div className="flex items-center gap-4">
-                  <div className={`w-8 h-8 rounded-lg flex items-center justify-center font-mono font-bold text-sm ${isuser ? 'bg-emerald-500 text-white' : 'bg-slate-700 text-slate-300'}`}>
-                    {rank}
-                  </div>
-                  <div className="w-10 h-10 rounded-lg bg-slate-700 overflow-hidden border border-slate-600">
-                    {leader.avatar_url ? (
-                      <img src={getoptimizedurl(leader.avatar_url, { width: 80, height: 80 })} alt="" className="w-full h-full object-cover" />
-                    ) : (
-                      <div className="w-full h-full bg-gradient-to-br from-slate-600 to-slate-700 flex items-center justify-center text-slate-300 font-semibold text-sm">
-                        {leader.username?.[0]?.toUpperCase() || '?'}
-                      </div>
-                    )}
-                  </div>
-                  <div>
-                    <p className={`font-medium ${isuser ? 'text-emerald-400' : 'text-white'}`}>{leader.username}</p>
-                    {leader.fullname && (
-                      <p className="text-xs text-slate-500">{leader.fullname}</p>
-                    )}
-                  </div>
-                </div>
-                <div className="text-right">
-                  <p className={`font-mono font-semibold ${isuser ? 'text-emerald-400' : 'text-cyan-400'}`}>{leader.xp.toLocaleString()}</p>
-                  <p className="text-[10px] text-slate-500 uppercase tracking-wider">XP</p>
-                </div>
-              </div>
-            )
-          })}
-        </div>
-
-        {leaders.length === 0 && (
-          <div className="px-4 py-12 text-center">
-            <div className="w-16 h-16 bg-slate-800 rounded-xl mx-auto mb-4 flex items-center justify-center">
-              <svg className="w-8 h-8 text-slate-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-              </svg>
+      {rest.length > 0 && (
+        <div className="relative bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 rounded-xl overflow-hidden border border-slate-700/50">
+          <div className="px-4 py-3 border-b border-slate-700/50 bg-slate-800/50">
+            <div className="flex items-center justify-between text-xs text-slate-400 font-mono uppercase tracking-wider">
+              <span>Rank</span>
+              <span>Learner</span>
+              <span>XP</span>
             </div>
-            <p className="text-slate-400">No learners on the leaderboard yet</p>
-            <p className="text-sm text-slate-500 mt-1">Start learning to climb the ranks!</p>
           </div>
-        )}
-      </div>
+
+          <div className="divide-y divide-slate-700/30">
+            {rest.map((leader, idx) => {
+              const rank = idx + 4
+              const isuser = user && leader.user_id === user.id
+              return (
+                <div
+                  key={leader.user_id}
+                  className={`flex items-center justify-between px-4 py-3 transition-colors ${isuser ? 'bg-emerald-900/20' : 'hover:bg-slate-800/50'}`}
+                >
+                  <div className="flex items-center gap-4">
+                    <div className={`w-8 h-8 rounded-lg flex items-center justify-center font-mono font-bold text-sm ${isuser ? 'bg-emerald-500 text-white' : 'bg-slate-700 text-slate-300'}`}>
+                      {rank}
+                    </div>
+                    <div className="w-10 h-10 rounded-lg bg-slate-700 overflow-hidden border border-slate-600">
+                      {leader.avatar_url ? (
+                        <img src={getoptimizedurl(leader.avatar_url, { width: 80, height: 80 })} alt="" className="w-full h-full object-cover" />
+                      ) : (
+                        <div className="w-full h-full bg-gradient-to-br from-slate-600 to-slate-700 flex items-center justify-center text-slate-300 font-semibold text-sm">
+                          {leader.username?.[0]?.toUpperCase() || '?'}
+                        </div>
+                      )}
+                    </div>
+                    <div>
+                      <p className={`font-medium ${isuser ? 'text-emerald-400' : 'text-white'}`}>{leader.username || leader.fullname || 'Anonymous'}</p>
+                      {leader.fullname && leader.username && (
+                        <p className="text-xs text-slate-500">{leader.fullname}</p>
+                      )}
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <p className={`font-mono font-semibold ${isuser ? 'text-emerald-400' : 'text-cyan-400'}`}>{(leader.xp || 0).toLocaleString()}</p>
+                    <p className="text-[10px] text-slate-500 uppercase tracking-wider">XP</p>
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+        </div>
+      )}
+
+      {leaders.length === 0 && (
+        <div className="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 rounded-xl p-12 text-center border border-slate-700/50">
+          <div className="w-20 h-20 bg-slate-800 rounded-2xl mx-auto mb-4 flex items-center justify-center border border-slate-700">
+            <svg className="w-10 h-10 text-slate-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+            </svg>
+          </div>
+          <p className="text-slate-400 text-lg">No learners on the leaderboard yet</p>
+          <p className="text-sm text-slate-500 mt-2">Start learning to climb the ranks!</p>
+        </div>
+      )}
     </div>
   )
 }
