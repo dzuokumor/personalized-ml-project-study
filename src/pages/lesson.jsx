@@ -9,6 +9,7 @@ import LessonContent from '../components/course/lessoncontent'
 import Quiz from '../components/course/quiz'
 import Codeexecutor from '../components/course/codeexecutor'
 import Login from '../components/auth/login'
+import Discussionboard from '../components/course/discussionboard'
 
 export default function lesson() {
   const { courseid, lessonid } = useParams()
@@ -310,7 +311,7 @@ export default function lesson() {
         </div>
       )}
 
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between mb-6">
         <div>
           {prevlesson && (
             <Link
@@ -348,6 +349,8 @@ export default function lesson() {
           )}
         </div>
       </div>
+
+      <Discussionboard courseid={courseid} lessonid={lessonid} />
     </div>
   )
 }

@@ -16,6 +16,8 @@ export default function leaderboard() {
       const { data, error } = await supabase
         .from('user_stats')
         .select('user_id, username, fullname, xp, level, avatar_url')
+        .gt('xp', 0)
+        .not('username', 'is', null)
         .order('xp', { ascending: false })
         .limit(100)
 
@@ -25,16 +27,29 @@ export default function leaderboard() {
         return
       }
 
-      const filtered = data.filter(u => u.username && u.xp > 0)
-      setleaders(filtered)
+      setleaders(data || [])
 
-      if (user) {
-        const rank = filtered.findIndex(l => l.user_id === user.id)
+      if (user && data) {
+        const rank = data.findIndex(l => l.user_id === user.id)
         if (rank !== -1) {
           setuserrank({
             rank: rank + 1,
-            xptogap: rank > 0 ? filtered[rank - 1].xp - filtered[rank].xp : 0
+            xptogap: rank > 0 ? data[rank - 1].xp - data[rank].xp : 0
           })
+        } else {
+          const { data: userdata } = await supabase
+            .from('user_stats')
+            .select('xp')
+            .eq('user_id', user.id)
+            .single()
+
+          if (userdata) {
+            const highercount = data.filter(l => l.xp > userdata.xp).length
+            setuserrank({
+              rank: highercount + 1,
+              xptogap: highercount < data.length ? data[highercount]?.xp - userdata.xp : 0
+            })
+          }
         }
       }
 

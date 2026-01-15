@@ -4,7 +4,113 @@ import { supabase } from '../../lib/supabase'
 import { getoptimizedurl } from '../../services/cloudinary'
 import { usestats } from '../../hooks/usestats'
 
-export default function discussionboard({ courseid, coursetitle }) {
+function neuralbackground() {
+  return (
+    <div className="absolute inset-0 overflow-hidden pointer-events-none">
+      <svg className="w-full h-full opacity-20" viewBox="0 0 600 400" preserveAspectRatio="xMidYMid slice">
+        <defs>
+          <linearGradient id="discLineGrad1" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#10b981" stopOpacity="0.8" />
+            <stop offset="100%" stopColor="#06b6d4" stopOpacity="0.4" />
+          </linearGradient>
+          <linearGradient id="discLineGrad2" x1="100%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stopColor="#06b6d4" stopOpacity="0.6" />
+            <stop offset="100%" stopColor="#10b981" stopOpacity="0.3" />
+          </linearGradient>
+        </defs>
+
+        <g className="animate-pulse" style={{ animationDuration: '4s' }}>
+          <line x1="20" y1="40" x2="100" y2="80" stroke="url(#discLineGrad1)" strokeWidth="1" opacity="0.6" />
+          <line x1="20" y1="40" x2="100" y2="160" stroke="url(#discLineGrad1)" strokeWidth="1" opacity="0.5" />
+          <line x1="20" y1="120" x2="100" y2="80" stroke="url(#discLineGrad1)" strokeWidth="1" opacity="0.4" />
+          <line x1="20" y1="120" x2="100" y2="160" stroke="url(#discLineGrad1)" strokeWidth="1" opacity="0.6" />
+          <line x1="20" y1="200" x2="100" y2="160" stroke="url(#discLineGrad1)" strokeWidth="1" opacity="0.5" />
+        </g>
+
+        <g className="animate-pulse" style={{ animationDuration: '3s', animationDelay: '0.5s' }}>
+          <line x1="100" y1="80" x2="200" y2="120" stroke="url(#discLineGrad2)" strokeWidth="1" opacity="0.5" />
+          <line x1="100" y1="160" x2="200" y2="120" stroke="url(#discLineGrad2)" strokeWidth="1" opacity="0.6" />
+          <line x1="100" y1="160" x2="200" y2="200" stroke="url(#discLineGrad2)" strokeWidth="1" opacity="0.4" />
+        </g>
+
+        <g className="animate-pulse" style={{ animationDuration: '3.5s', animationDelay: '1s' }}>
+          <line x1="200" y1="120" x2="300" y2="140" stroke="url(#discLineGrad1)" strokeWidth="1" opacity="0.6" />
+          <line x1="200" y1="200" x2="300" y2="140" stroke="url(#discLineGrad1)" strokeWidth="1" opacity="0.5" />
+          <line x1="200" y1="200" x2="300" y2="240" stroke="url(#discLineGrad1)" strokeWidth="1" opacity="0.4" />
+        </g>
+
+        <g className="animate-pulse" style={{ animationDuration: '4.5s', animationDelay: '0.3s' }}>
+          <line x1="400" y1="60" x2="480" y2="100" stroke="url(#discLineGrad2)" strokeWidth="1" opacity="0.5" />
+          <line x1="400" y1="140" x2="480" y2="100" stroke="url(#discLineGrad2)" strokeWidth="1" opacity="0.6" />
+          <line x1="480" y1="100" x2="560" y2="80" stroke="url(#discLineGrad1)" strokeWidth="1" opacity="0.4" />
+          <line x1="480" y1="100" x2="560" y2="160" stroke="url(#discLineGrad1)" strokeWidth="1" opacity="0.5" />
+        </g>
+
+        <g className="animate-pulse" style={{ animationDuration: '5s', animationDelay: '0.8s' }}>
+          <line x1="420" y1="280" x2="500" y2="320" stroke="url(#discLineGrad1)" strokeWidth="1" opacity="0.6" />
+          <line x1="420" y1="360" x2="500" y2="320" stroke="url(#discLineGrad1)" strokeWidth="1" opacity="0.5" />
+          <line x1="500" y1="320" x2="580" y2="300" stroke="url(#discLineGrad2)" strokeWidth="1" opacity="0.4" />
+        </g>
+
+        <g>
+          <circle cx="20" cy="40" r="5" fill="#1e293b" stroke="#10b981" strokeWidth="1.5" className="animate-pulse" style={{ animationDuration: '2s' }} />
+          <circle cx="20" cy="40" r="2" fill="#10b981" />
+          <circle cx="20" cy="120" r="5" fill="#1e293b" stroke="#10b981" strokeWidth="1.5" className="animate-pulse" style={{ animationDuration: '2.5s' }} />
+          <circle cx="20" cy="120" r="2" fill="#10b981" />
+          <circle cx="20" cy="200" r="5" fill="#1e293b" stroke="#10b981" strokeWidth="1.5" className="animate-pulse" style={{ animationDuration: '3s' }} />
+          <circle cx="20" cy="200" r="2" fill="#10b981" />
+        </g>
+
+        <g>
+          <circle cx="100" cy="80" r="6" fill="#1e293b" stroke="#06b6d4" strokeWidth="1.5" className="animate-pulse" style={{ animationDuration: '2.2s' }} />
+          <circle cx="100" cy="80" r="2.5" fill="#06b6d4" />
+          <circle cx="100" cy="160" r="6" fill="#1e293b" stroke="#06b6d4" strokeWidth="1.5" className="animate-pulse" style={{ animationDuration: '2.7s' }} />
+          <circle cx="100" cy="160" r="2.5" fill="#06b6d4" />
+        </g>
+
+        <g>
+          <circle cx="200" cy="120" r="7" fill="#1e293b" stroke="#10b981" strokeWidth="2" className="animate-pulse" style={{ animationDuration: '2.4s' }} />
+          <circle cx="200" cy="120" r="3" fill="#10b981" />
+          <circle cx="200" cy="200" r="7" fill="#1e293b" stroke="#10b981" strokeWidth="2" className="animate-pulse" style={{ animationDuration: '2.9s' }} />
+          <circle cx="200" cy="200" r="3" fill="#10b981" />
+        </g>
+
+        <g>
+          <circle cx="300" cy="140" r="6" fill="#1e293b" stroke="#06b6d4" strokeWidth="1.5" className="animate-pulse" style={{ animationDuration: '2.6s' }} />
+          <circle cx="300" cy="140" r="2.5" fill="#06b6d4" />
+          <circle cx="300" cy="240" r="6" fill="#1e293b" stroke="#06b6d4" strokeWidth="1.5" className="animate-pulse" style={{ animationDuration: '3.1s' }} />
+          <circle cx="300" cy="240" r="2.5" fill="#06b6d4" />
+        </g>
+
+        <g>
+          <circle cx="400" cy="60" r="5" fill="#1e293b" stroke="#10b981" strokeWidth="1.5" className="animate-pulse" style={{ animationDuration: '2.3s' }} />
+          <circle cx="400" cy="60" r="2" fill="#10b981" />
+          <circle cx="400" cy="140" r="5" fill="#1e293b" stroke="#10b981" strokeWidth="1.5" className="animate-pulse" style={{ animationDuration: '2.8s' }} />
+          <circle cx="400" cy="140" r="2" fill="#10b981" />
+          <circle cx="480" cy="100" r="6" fill="#1e293b" stroke="#06b6d4" strokeWidth="1.5" className="animate-pulse" style={{ animationDuration: '3.2s' }} />
+          <circle cx="480" cy="100" r="2.5" fill="#06b6d4" />
+          <circle cx="560" cy="80" r="5" fill="#1e293b" stroke="#10b981" strokeWidth="1.5" className="animate-pulse" style={{ animationDuration: '2.5s' }} />
+          <circle cx="560" cy="80" r="2" fill="#10b981" />
+          <circle cx="560" cy="160" r="5" fill="#1e293b" stroke="#10b981" strokeWidth="1.5" className="animate-pulse" style={{ animationDuration: '3s' }} />
+          <circle cx="560" cy="160" r="2" fill="#10b981" />
+        </g>
+
+        <g>
+          <circle cx="420" cy="280" r="5" fill="#1e293b" stroke="#10b981" strokeWidth="1.5" className="animate-pulse" style={{ animationDuration: '2.7s' }} />
+          <circle cx="420" cy="280" r="2" fill="#10b981" />
+          <circle cx="420" cy="360" r="5" fill="#1e293b" stroke="#10b981" strokeWidth="1.5" className="animate-pulse" style={{ animationDuration: '3.2s' }} />
+          <circle cx="420" cy="360" r="2" fill="#10b981" />
+          <circle cx="500" cy="320" r="6" fill="#1e293b" stroke="#06b6d4" strokeWidth="1.5" className="animate-pulse" style={{ animationDuration: '2.9s' }} />
+          <circle cx="500" cy="320" r="2.5" fill="#06b6d4" />
+          <circle cx="580" cy="300" r="5" fill="#1e293b" stroke="#10b981" strokeWidth="1.5" className="animate-pulse" style={{ animationDuration: '3.4s' }} />
+          <circle cx="580" cy="300" r="2" fill="#10b981" />
+        </g>
+      </svg>
+    </div>
+  )
+}
+
+export default function discussionboard({ courseid, lessonid, lessontitle }) {
   const { user, avatar } = useauth()
   const { stats } = usestats()
   const [posts, setposts] = useState([])
@@ -19,7 +125,7 @@ export default function discussionboard({ courseid, coursetitle }) {
 
   useEffect(() => {
     fetchposts()
-  }, [courseid])
+  }, [courseid, lessonid])
 
   const fetchposts = async () => {
     const { data, error } = await supabase
@@ -31,9 +137,10 @@ export default function discussionboard({ courseid, coursetitle }) {
         updated_at,
         user_id,
         parent_id,
-        user_stats!inner(username, fullname, avatar_url)
+        user_stats(username, fullname, avatar_url)
       `)
       .eq('course_id', courseid)
+      .eq('lesson_id', lessonid)
       .order('created_at', { ascending: false })
 
     if (error) {
@@ -62,6 +169,7 @@ export default function discussionboard({ courseid, coursetitle }) {
       .from('discussions')
       .insert({
         course_id: courseid,
+        lesson_id: lessonid,
         user_id: user.id,
         content: newpost.trim(),
         parent_id: null
@@ -84,6 +192,7 @@ export default function discussionboard({ courseid, coursetitle }) {
       .from('discussions')
       .insert({
         course_id: courseid,
+        lesson_id: lessonid,
         user_id: user.id,
         content: replytext.trim(),
         parent_id: postid
@@ -149,29 +258,18 @@ export default function discussionboard({ courseid, coursetitle }) {
   }
 
   return (
-    <div className="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 rounded-2xl overflow-hidden border border-slate-700/50">
-      <div className="absolute inset-0 opacity-10 pointer-events-none">
-        <svg className="w-full h-full" viewBox="0 0 400 300" preserveAspectRatio="none">
-          <defs>
-            <linearGradient id="discussGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stopColor="#10b981" stopOpacity="0.4" />
-              <stop offset="100%" stopColor="#06b6d4" stopOpacity="0.2" />
-            </linearGradient>
-          </defs>
-          <path d="M0,50 Q100,30 200,60 T400,40" stroke="url(#discussGrad)" strokeWidth="0.8" fill="none" />
-          <path d="M0,150 Q150,120 250,160 T400,130" stroke="url(#discussGrad)" strokeWidth="0.6" fill="none" opacity="0.5" />
-        </svg>
-      </div>
+    <div className="relative bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 rounded-2xl overflow-hidden border border-slate-700/50">
+      {neuralbackground()}
 
-      <div className="relative px-4 sm:px-6 py-4 border-b border-slate-700/50 bg-slate-800/50">
+      <div className="relative px-4 sm:px-6 py-4 border-b border-slate-700/50 bg-slate-900/80 backdrop-blur-sm">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-gradient-to-br from-emerald-500 to-cyan-500 rounded-xl flex items-center justify-center">
-            <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <div className="w-10 h-10 bg-slate-800 rounded-xl flex items-center justify-center border border-slate-700">
+            <svg className="w-5 h-5 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a1.994 1.994 0 01-1.414-.586m0 0L11 14h4a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2v4l.586-.586z" />
             </svg>
           </div>
           <div>
-            <h3 className="font-semibold text-white">Discussion Board</h3>
+            <h3 className="font-semibold text-white">Discussion</h3>
             <p className="text-xs text-slate-400 font-mono">{posts.length} posts</p>
           </div>
         </div>
@@ -194,8 +292,8 @@ export default function discussionboard({ courseid, coursetitle }) {
                 <textarea
                   value={newpost}
                   onChange={(e) => setnewpost(e.target.value)}
-                  placeholder="Share a question or insight..."
-                  className="w-full px-4 py-3 bg-slate-800/80 border border-slate-700/50 rounded-xl resize-none focus:outline-none focus:border-emerald-500/50 text-sm text-white placeholder-slate-500 min-h-[80px]"
+                  placeholder="Share a question or insight about this lesson..."
+                  className="w-full px-4 py-3 bg-slate-800/80 border border-slate-700/50 rounded-xl resize-none focus:outline-none focus:border-emerald-500/50 text-sm text-white placeholder-slate-500 min-h-[80px] backdrop-blur-sm"
                 />
                 <div className="flex justify-end mt-2">
                   <button
@@ -217,7 +315,7 @@ export default function discussionboard({ courseid, coursetitle }) {
             </div>
           </div>
         ) : (
-          <div className="mb-6 p-4 bg-slate-800/50 rounded-xl border border-slate-700/50 text-center">
+          <div className="mb-6 p-4 bg-slate-800/50 rounded-xl border border-slate-700/50 text-center backdrop-blur-sm">
             <p className="text-slate-400 text-sm">Sign in to join the discussion</p>
           </div>
         )}
@@ -228,7 +326,7 @@ export default function discussionboard({ courseid, coursetitle }) {
           </div>
         ) : posts.length === 0 ? (
           <div className="text-center py-8">
-            <div className="w-14 h-14 bg-slate-800/50 rounded-xl mx-auto mb-4 flex items-center justify-center border border-slate-700/50">
+            <div className="w-14 h-14 bg-slate-800/70 rounded-xl mx-auto mb-4 flex items-center justify-center border border-slate-700/50 backdrop-blur-sm">
               <svg className="w-7 h-7 text-slate-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
               </svg>
@@ -239,7 +337,7 @@ export default function discussionboard({ courseid, coursetitle }) {
         ) : (
           <div className="space-y-4">
             {posts.map(post => (
-              <div key={post.id} className="bg-slate-800/40 rounded-xl border border-slate-700/30 overflow-hidden">
+              <div key={post.id} className="bg-slate-800/40 rounded-xl border border-slate-700/30 overflow-hidden backdrop-blur-sm">
                 <div className="p-4">
                   <div className="flex gap-3">
                     <div className="w-9 h-9 rounded-lg bg-slate-700 overflow-hidden flex-shrink-0 border border-slate-600">

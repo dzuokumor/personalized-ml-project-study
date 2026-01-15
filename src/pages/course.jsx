@@ -7,7 +7,6 @@ import { useauth } from '../contexts/authcontext'
 import ProgressBar from '../components/course/progressbar'
 import Login from '../components/auth/login'
 import Publishmodal from '../components/github/publishmodal'
-import Discussionboard from '../components/course/discussionboard'
 
 export default function course() {
   const { courseid } = useParams()
@@ -225,10 +224,6 @@ export default function course() {
             )
           })}
         </div>
-      </div>
-
-      <div className="mt-8">
-        <Discussionboard courseid={courseid} coursetitle={coursedata.title} />
       </div>
 
       {showpublish && (
