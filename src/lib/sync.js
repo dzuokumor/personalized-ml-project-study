@@ -181,31 +181,37 @@ export const syncservice = {
     }
   },
 
-  async savestats(userid, stats) {
+  async savestats(userid, stats, avatarurl = null) {
     const achievements = [
       ...(stats.unlockedAchievements || []),
       ...(stats.completedCourses || []).map(c => `course:${c}`)
     ]
 
+    const updatedata = {
+      user_id: userid,
+      xp: stats.xp || 0,
+      level: stats.level || 1,
+      username: stats.username || null,
+      fullname: stats.fullname || null,
+      username_changed_at: stats.usernamechangedat || null,
+      fullname_changed_at: stats.fullnamechangedat || null,
+      lessons_completed: stats.lessonsCompleted || 0,
+      quizzes_passed: stats.quizzesPassed || 0,
+      perfect_quizzes: stats.perfectQuizzes || 0,
+      current_streak: stats.currentStreak || 0,
+      longest_streak: stats.longestStreak || 0,
+      last_activity_date: stats.lastActivityDate,
+      achievements: [...new Set(achievements)],
+      updated_at: new Date().toISOString()
+    }
+
+    if (avatarurl) {
+      updatedata.avatar_url = avatarurl
+    }
+
     const { error } = await supabase
       .from('user_stats')
-      .upsert({
-        user_id: userid,
-        xp: stats.xp || 0,
-        level: stats.level || 1,
-        username: stats.username || null,
-        fullname: stats.fullname || null,
-        username_changed_at: stats.usernamechangedat || null,
-        fullname_changed_at: stats.fullnamechangedat || null,
-        lessons_completed: stats.lessonsCompleted || 0,
-        quizzes_passed: stats.quizzesPassed || 0,
-        perfect_quizzes: stats.perfectQuizzes || 0,
-        current_streak: stats.currentStreak || 0,
-        longest_streak: stats.longestStreak || 0,
-        last_activity_date: stats.lastActivityDate,
-        achievements: [...new Set(achievements)],
-        updated_at: new Date().toISOString()
-      }, { onConflict: 'user_id' })
+      .upsert(updatedata, { onConflict: 'user_id' })
 
     if (error) console.error('Failed to save stats:', error)
     return !error

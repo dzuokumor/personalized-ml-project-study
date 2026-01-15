@@ -1,17 +1,19 @@
 import { useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { getcoursebyid } from '../data/courses'
-import { useprogress } from '../hooks/useprogress'
+import { useprogress, usequizscores } from '../hooks/useprogress'
 import { usestore } from '../store/usestore'
 import { useauth } from '../contexts/authcontext'
 import ProgressBar from '../components/course/progressbar'
 import Login from '../components/auth/login'
 import Publishmodal from '../components/github/publishmodal'
+import Discussionboard from '../components/course/discussionboard'
 
 export default function course() {
   const { courseid } = useParams()
   const coursedata = getcoursebyid(courseid)
   const { progress: supabaseprogress, getcourseprogress } = useprogress()
+  const { scores } = usequizscores()
   const storeprogress = usestore((state) => state.progress)
   const storegetcourseprogress = usestore((state) => state.getcourseprogress)
   const { user, loading, connectgithubforrepos } = useauth()
@@ -93,6 +95,14 @@ export default function course() {
   const storeoverall = storegetcourseprogress(courseid, coursedata.lessons.length)
   const overallprogress = Math.max(supabaseoverall, storeoverall)
 
+  const hastakenquiz = Object.keys(scores).some(key => key.startsWith(`${courseid}:`))
+  const haspassedquiz = Object.keys(scores).some(key => {
+    if (!key.startsWith(`${courseid}:`)) return false
+    const score = scores[key]
+    return score && score.total > 0 && (score.score / score.total) >= 0.7
+  })
+  const canpublish = overallprogress === 100 && haspassedquiz
+
   return (
     <div>
       <Link to="/" className="text-sm text-slate-500 hover:text-slate-700 mb-4 inline-flex items-center gap-1">
@@ -133,28 +143,47 @@ export default function course() {
       </div>
 
       {overallprogress === 100 && (
-        <div className="bg-gradient-to-r from-emerald-500 to-emerald-600 rounded-xl p-4 sm:p-6 mb-6 sm:mb-8 text-white">
+        <div className={`rounded-xl p-4 sm:p-6 mb-6 sm:mb-8 text-white ${canpublish ? 'bg-gradient-to-r from-emerald-500 to-emerald-600' : 'bg-gradient-to-r from-amber-500 to-orange-500'}`}>
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div className="flex items-center gap-3 sm:gap-4">
               <div className="w-12 h-12 sm:w-14 sm:h-14 bg-white/20 rounded-xl flex items-center justify-center shrink-0">
-                <svg className="w-6 h-6 sm:w-8 sm:h-8" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                </svg>
+                {canpublish ? (
+                  <svg className="w-6 h-6 sm:w-8 sm:h-8" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                  </svg>
+                ) : (
+                  <svg className="w-6 h-6 sm:w-8 sm:h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                  </svg>
+                )}
               </div>
               <div>
-                <h3 className="text-lg sm:text-xl font-bold">Course Completed!</h3>
-                <p className="text-sm text-emerald-100">Great job! Share your achievement on GitHub.</p>
+                <h3 className="text-lg sm:text-xl font-bold">{canpublish ? 'Course Completed!' : 'Lessons Complete!'}</h3>
+                <p className="text-sm opacity-90">
+                  {canpublish
+                    ? 'Great job! Share your achievement on GitHub.'
+                    : 'Pass a quiz with 70%+ to unlock GitHub publishing.'}
+                </p>
               </div>
             </div>
-            <button
-              onClick={() => setshowpublish(true)}
-              className="w-full sm:w-auto flex items-center justify-center gap-2 px-4 py-2 bg-white text-emerald-600 rounded-lg font-medium hover:bg-emerald-50 transition-colors"
-            >
-              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
-              </svg>
-              Publish to GitHub
-            </button>
+            {canpublish ? (
+              <button
+                onClick={() => setshowpublish(true)}
+                className="w-full sm:w-auto flex items-center justify-center gap-2 px-4 py-2 bg-white text-emerald-600 rounded-lg font-medium hover:bg-emerald-50 transition-colors"
+              >
+                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                </svg>
+                Publish to GitHub
+              </button>
+            ) : (
+              <div className="w-full sm:w-auto flex items-center gap-2 px-4 py-2 bg-white/20 rounded-lg">
+                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                </svg>
+                <span className="text-sm font-medium">Quiz Required</span>
+              </div>
+            )}
           </div>
         </div>
       )}
@@ -196,6 +225,10 @@ export default function course() {
             )
           })}
         </div>
+      </div>
+
+      <div className="mt-8">
+        <Discussionboard courseid={courseid} coursetitle={coursedata.title} />
       </div>
 
       {showpublish && (

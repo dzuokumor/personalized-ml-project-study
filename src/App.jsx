@@ -6,6 +6,7 @@ import Lesson from './pages/lesson'
 import Glossary from './pages/glossary'
 import Profile from './pages/profile'
 import Achievements from './pages/achievements'
+import Leaderboard from './pages/leaderboard'
 import Chatwidget from './components/ai/chatwidget'
 
 export default function App() {
@@ -19,6 +20,7 @@ export default function App() {
           <Route path="glossary" element={<Glossary />} />
           <Route path="profile" element={<Profile />} />
           <Route path="achievements" element={<Achievements />} />
+          <Route path="leaderboard" element={<Leaderboard />} />
         </Route>
       </Routes>
       <Chatwidget />

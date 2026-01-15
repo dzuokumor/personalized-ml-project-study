@@ -105,6 +105,12 @@ export const Authprovider = ({ children }) => {
     })
     if (!error) {
       setavatar(avatarurl)
+      if (user) {
+        await supabase
+          .from('user_stats')
+          .update({ avatar_url: avatarurl })
+          .eq('user_id', user.id)
+      }
     }
     return { data, error }
   }
