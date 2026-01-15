@@ -130,15 +130,7 @@ export default function discussionboard({ courseid, lessonid, lessontitle }) {
   const fetchposts = async () => {
     const { data, error } = await supabase
       .from('discussions')
-      .select(`
-        id,
-        content,
-        created_at,
-        updated_at,
-        user_id,
-        parent_id,
-        user_stats(username, fullname, avatar_url)
-      `)
+      .select('id, content, created_at, updated_at, user_id, parent_id')
       .eq('course_id', courseid)
       .eq('lesson_id', lessonid)
       .order('created_at', { ascending: false })
@@ -149,8 +141,30 @@ export default function discussionboard({ courseid, lessonid, lessontitle }) {
       return
     }
 
-    const toplevel = data?.filter(p => !p.parent_id) || []
-    const replies = data?.filter(p => p.parent_id) || []
+    if (!data || data.length === 0) {
+      setposts([])
+      setloading(false)
+      return
+    }
+
+    const userids = [...new Set(data.map(d => d.user_id))]
+    const { data: usersdata } = await supabase
+      .from('user_stats')
+      .select('user_id, username, fullname, avatar_url')
+      .in('user_id', userids)
+
+    const usersmap = {}
+    usersdata?.forEach(u => {
+      usersmap[u.user_id] = u
+    })
+
+    const datawithusers = data.map(post => ({
+      ...post,
+      user_stats: usersmap[post.user_id] || null
+    }))
+
+    const toplevel = datawithusers.filter(p => !p.parent_id)
+    const replies = datawithusers.filter(p => p.parent_id)
 
     const postswithreplies = toplevel.map(post => ({
       ...post,
@@ -164,8 +178,10 @@ export default function discussionboard({ courseid, lessonid, lessontitle }) {
   const handlepost = async () => {
     if (!newpost.trim() || !user || posting) return
 
+    console.log('Posting discussion:', { courseid, lessonid, userid: user.id, content: newpost.trim() })
+
     setposting(true)
-    const { error } = await supabase
+    const { data, error } = await supabase
       .from('discussions')
       .insert({
         course_id: courseid,
@@ -174,9 +190,13 @@ export default function discussionboard({ courseid, lessonid, lessontitle }) {
         content: newpost.trim(),
         parent_id: null
       })
+      .select()
+
+    console.log('Post result:', { data, error })
 
     if (error) {
       console.error('Error posting:', error)
+      alert(`Error posting: ${error.message}`)
     } else {
       setnewpost('')
       await fetchposts()

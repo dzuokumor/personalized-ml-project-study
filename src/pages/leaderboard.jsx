@@ -16,10 +16,10 @@ export default function leaderboard() {
       const { data, error } = await supabase
         .from('user_stats')
         .select('user_id, username, fullname, xp, level, avatar_url')
-        .gt('xp', 0)
-        .not('username', 'is', null)
         .order('xp', { ascending: false })
         .limit(100)
+
+      console.log('Leaderboard fetch result:', { data, error })
 
       if (error) {
         console.error('Error fetching leaderboard:', error)
@@ -61,6 +61,7 @@ export default function leaderboard() {
 
   const top3 = leaders.slice(0, 3)
   const rest = leaders.slice(3, 10)
+  const showall = leaders.length < 3
 
   const podiumorder = [1, 0, 2]
   const podiumheights = ['h-28', 'h-36', 'h-24']
@@ -113,6 +114,50 @@ export default function leaderboard() {
           </div>
         </div>
       </div>
+
+      {showall && leaders.length > 0 && (
+        <div className="mb-8">
+          <div className="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 rounded-xl overflow-hidden border border-slate-700/50">
+            <div className="px-4 py-3 border-b border-slate-700/50 bg-slate-800/50">
+              <span className="text-sm text-slate-400 font-mono">Top Learners</span>
+            </div>
+            <div className="divide-y divide-slate-700/30">
+              {leaders.map((leader, idx) => {
+                const isuser = user && leader.user_id === user.id
+                return (
+                  <div
+                    key={leader.user_id}
+                    className={`flex items-center justify-between px-4 py-3 ${isuser ? 'bg-emerald-900/20' : 'hover:bg-slate-800/50'}`}
+                  >
+                    <div className="flex items-center gap-4">
+                      <div className={`w-8 h-8 rounded-lg flex items-center justify-center font-mono font-bold text-sm ${idx === 0 ? 'bg-amber-400 text-white' : idx === 1 ? 'bg-slate-400 text-white' : idx === 2 ? 'bg-amber-600 text-white' : 'bg-slate-700 text-slate-300'}`}>
+                        {idx + 1}
+                      </div>
+                      <div className="w-10 h-10 rounded-lg bg-slate-700 overflow-hidden border border-slate-600">
+                        {leader.avatar_url ? (
+                          <img src={getoptimizedurl(leader.avatar_url, { width: 80, height: 80 })} alt="" className="w-full h-full object-cover" />
+                        ) : (
+                          <div className="w-full h-full bg-gradient-to-br from-slate-600 to-slate-700 flex items-center justify-center text-slate-300 font-semibold text-sm">
+                            {leader.username?.[0]?.toUpperCase() || leader.fullname?.[0]?.toUpperCase() || '?'}
+                          </div>
+                        )}
+                      </div>
+                      <div>
+                        <p className={`font-medium ${isuser ? 'text-emerald-400' : 'text-white'}`}>{leader.username || leader.fullname || 'Anonymous'}</p>
+                        <p className="text-xs text-slate-500">Level {leader.level || 1}</p>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <p className={`font-mono font-semibold ${isuser ? 'text-emerald-400' : 'text-cyan-400'}`}>{(leader.xp || 0).toLocaleString()}</p>
+                      <p className="text-[10px] text-slate-500 uppercase tracking-wider">XP</p>
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+          </div>
+        </div>
+      )}
 
       {top3.length >= 3 && (
         <div className="mb-8">

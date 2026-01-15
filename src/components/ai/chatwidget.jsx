@@ -199,19 +199,19 @@ export default function chatwidget({ context = '' }) {
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
           </svg>
         ) : (
-          <neuronicon className="w-7 h-7" />
+          neuronicon({ className: "w-7 h-7" })
         )}
       </button>
 
       {isopen && (
         <div className="fixed bottom-20 sm:bottom-24 right-2 sm:right-6 left-2 sm:left-auto sm:w-96 h-[70vh] sm:h-[500px] bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 rounded-2xl flex flex-col z-50 overflow-hidden shadow-2xl border border-slate-700/50">
-          <neuralbackground />
+          {neuralbackground()}
 
           <div className="relative px-4 py-3 border-b border-slate-700/50 bg-slate-900/80 backdrop-blur-sm">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <div className="w-9 h-9 bg-slate-800 rounded-lg flex items-center justify-center border border-slate-700">
-                  <neuronicon className="w-6 h-6" />
+                  {neuronicon({ className: "w-6 h-6" })}
                 </div>
                 <div>
                   <span className="font-semibold text-white text-sm">Neural Tutor</span>
@@ -234,7 +234,7 @@ export default function chatwidget({ context = '' }) {
             {messages.length === 0 && (
               <div className="text-center mt-8">
                 <div className="w-16 h-16 mx-auto mb-4 bg-slate-800/70 rounded-xl flex items-center justify-center border border-slate-700/50 backdrop-blur-sm">
-                  <neuronicon className="w-10 h-10" />
+                  {neuronicon({ className: "w-10 h-10" })}
                 </div>
                 <p className="text-sm text-slate-300 font-medium mb-1">Ask me anything about ML</p>
                 <p className="text-xs text-slate-500">Concepts, debugging, or questions</p>
